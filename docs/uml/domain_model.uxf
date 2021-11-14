@@ -11,7 +11,8 @@
     </coordinates>
     <panel_attributes>Device
 --
-uuid : String</panel_attributes>
+uuid : String
+antenaBatteryUsage : float</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -57,13 +58,13 @@ m2=1..*
     <coordinates>
       <x>860</x>
       <y>540</y>
-      <w>210</w>
+      <w>240</w>
       <h>190</h>
     </coordinates>
     <panel_attributes>Time Slot
 --
 from : LocalDateTime
-batteryConsumption : float
+networkBatteryConsumption : float
 networkUsage : float</panel_attributes>
     <additional_attributes/>
   </element>

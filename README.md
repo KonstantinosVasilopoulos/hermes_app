@@ -49,3 +49,9 @@
 #### Διάγραμμα μοντέλου πεδίου
 
 ![domain model diagram](docs/diagrams/domain_model.png)
+
+#### Διαγράμματα ακολουθίας
+
+##### ΠΧ1
+
+![uc1 sequence diagram](docs/diagrams/uc1_sequence_diagram.png)
