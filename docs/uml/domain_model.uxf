@@ -4,10 +4,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>610</x>
-      <y>300</y>
+      <x>580</x>
+      <y>280</y>
       <w>210</w>
-      <h>190</h>
+      <h>130</h>
     </coordinates>
     <panel_attributes>Device
 --
@@ -18,10 +18,10 @@ antenaBatteryUsage : float</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1110</x>
-      <y>300</y>
+      <x>1090</x>
+      <y>280</y>
       <w>210</w>
-      <h>190</h>
+      <h>130</h>
     </coordinates>
     <panel_attributes>Application
 --
@@ -31,41 +31,41 @@ name : String</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>810</x>
-      <y>380</y>
-      <w>320</w>
+      <x>780</x>
+      <y>320</y>
+      <w>330</w>
       <h>50</h>
     </coordinates>
     <panel_attributes>lt=-
 m1=1..*
 m2=1..*
 </panel_attributes>
-    <additional_attributes>10.0;20.0;300.0;20.0</additional_attributes>
+    <additional_attributes>10.0;20.0;310.0;20.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>950</x>
-      <y>390</y>
+      <x>930</x>
+      <y>330</y>
       <w>30</w>
-      <h>170</h>
+      <h>130</h>
     </coordinates>
     <panel_attributes>lt=.</panel_attributes>
-    <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>860</x>
-      <y>540</y>
-      <w>240</w>
-      <h>190</h>
+      <x>810</x>
+      <y>440</y>
+      <w>260</w>
+      <h>90</h>
     </coordinates>
-    <panel_attributes>Time Slot
+    <panel_attributes>TimeSlot
 --
 from : LocalDateTime
-networkBatteryConsumption : float
-networkUsage : float</panel_attributes>
+networkUsage : float
+networkBatteryConsumption: float</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

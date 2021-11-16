@@ -59,3 +59,35 @@
 ##### ΠΧ8
 
 ![uc8 sequence diagram](docs/diagrams/uc8_sequence_diagram.png)
+
+#### Ψευδοκώδικας
+
+##### ΠΧ1 - AntennaMonitor
+
+```python
+state = OFF
+while antenna.state == ON:
+    continue
+
+slots = {}  # Init zeroes
+previous = time.now()
+while True:
+    while not hermes.is_running():
+        if time.now().minutes == 0 and time.now().seconds == 0 and state == ON:
+            slots[time.now().hour-1] += time.now() - previous
+
+        if antenna.state != state and state == ON:
+            end = time.now().hour
+            if end == previous.hour:
+                slots[end] += time.now() - previous
+
+            else:
+                slots[end] += time.now() - time.now().hour
+
+            state = OFF
+            previous = time.now()
+
+        elif antenna.state != state:
+            state = ON
+            previous = time.now()
+```
