@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 
 @Entity
 public class TimeSlot {
@@ -16,6 +18,14 @@ public class TimeSlot {
 
     @Column(name = "network_battery_consumption", nullable = true)
     private float networkBatteryConsumption;
+
+    @ManyToOne
+    @JoinColumn(name = "device_uuid")
+    private Device device;
+
+    @ManyToOne
+    @JoinColumn(name = "application_name")
+    private Application application;
 
     public TimeSlot(String uuid, String name, LocalDateTime fromTime) {
         id = new TimeSlotId(uuid, name);
@@ -47,10 +57,26 @@ public class TimeSlot {
     }
 
     public float getNetworkBatteryConsumption() {
-        return this.networkBatteryConsumption = networkBatteryConsumption;
+        return networkBatteryConsumption;
     }
 
     public void setNetworkBatteryConsumption(float networkBatteryConsumption) {
         this.networkBatteryConsumption = networkBatteryConsumption;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
     }
 }
