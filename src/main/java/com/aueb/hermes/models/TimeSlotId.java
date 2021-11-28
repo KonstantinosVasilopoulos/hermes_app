@@ -2,7 +2,6 @@ package com.aueb.hermes.models;
 
 import java.io.Serializable;
 import javax.persistence.Embeddable;
-import javax.persistence.Id;
 import javax.persistence.Column;
 
 @Embeddable
