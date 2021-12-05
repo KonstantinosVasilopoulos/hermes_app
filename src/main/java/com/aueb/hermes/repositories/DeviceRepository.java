@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.aueb.hermes.models.Device;
 
 public interface DeviceRepository extends JpaRepository<Device, String> {
-    
+    Device findByUuid(String uuid);
 }

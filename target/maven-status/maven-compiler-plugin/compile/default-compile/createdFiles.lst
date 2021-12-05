@@ -1,5 +1,6 @@
 com/aueb/hermes/HermesApplication.class
 com/aueb/hermes/models/TimeSlot.class
+com/aueb/hermes/utils/RegisterDeviceRequestBody.class
 com/aueb/hermes/models/TimeSlotId.class
 com/aueb/hermes/models/Application.class
 com/aueb/hermes/models/Device.class

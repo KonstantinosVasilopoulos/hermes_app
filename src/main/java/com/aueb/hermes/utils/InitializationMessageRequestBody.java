@@ -1,9 +1,10 @@
 package com.aueb.hermes.utils;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
-public class InitializationMessageRequestBody{
+public class InitializationMessageRequestBody implements Serializable {
 
     private String uuid;
     private HashMap<LocalDateTime, HashMap<String, Float>> networkUsage;
