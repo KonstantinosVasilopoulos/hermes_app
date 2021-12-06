@@ -13,6 +13,10 @@ public class Application {
     @OneToMany(mappedBy = "application")
     private Set<TimeSlot> timeSlots;
 
+    public Application() {
+        
+    }
+
     public Application(String name) {
         this.name = name;
     }

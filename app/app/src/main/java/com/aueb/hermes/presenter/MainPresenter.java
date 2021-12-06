@@ -3,13 +3,12 @@ package com.aueb.hermes.presenter;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.aueb.hermes.utils.RegisterDeviceRequestBody;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.UUID;
 
@@ -17,6 +16,11 @@ public class MainPresenter {
 
     private Context context;
     private SharedPreferences sharedPreferences;
+
+    public MainPresenter(Context context, SharedPreferences sharedPreferences) {
+        this.context = context;
+        this.sharedPreferences = sharedPreferences;
+    }
 
     public void registerDevice() {
         Thread thread = new Thread(new Runnable() {
@@ -40,25 +44,26 @@ public class MainPresenter {
                 //RegisterDeviceRequestBody data = new RegisterDeviceRequestBody(uuid, antennaBatteryConsumption);
 
                 try {
-                    URL url = new URL("localhost:8080/register-device");
+                    URL url = new URL("http://localhost:8080/register-device");
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("POST");
                     con.setRequestProperty("Content-Type", "application/json");
                     con.setDoOutput(true);
-                    String data = "{\"uuid\": \"" + uuid + "\", \"antennaBatteryConsumption\": \"" + antennaBatteryConsumption + "\"}";
-                    try(OutputStream os = con.getOutputStream()) {
-                        byte[] input = data.getBytes();
-                        os.write(input, 0, input.length);
+
+                    // Package data into a JSON object
+                    JSONObject data = new JSONObject();
+                    data.put("uuid", uuid);
+                    data.put("antennaBatteryConsumption", antennaBatteryConsumption);
+
+                    // Write data to output stream
+                    try (OutputStreamWriter osw = new OutputStreamWriter(con.getOutputStream())) {
+                        osw.write(data.toString());
+                        osw.flush();
                     }
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (ProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+
+                } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
         });
         thread.start();

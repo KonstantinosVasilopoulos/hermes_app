@@ -12,6 +12,10 @@ public class TimeSlotId implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
+    public TimeSlotId() {
+        
+    }
+
     public TimeSlotId(String uuid, String name) {
         this.uuid = uuid;
         this.name = name;

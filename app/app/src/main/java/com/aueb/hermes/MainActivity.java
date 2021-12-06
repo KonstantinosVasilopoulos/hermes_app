@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.aueb.hermes.presenter.MainPresenter;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -14,11 +16,17 @@ public class MainActivity extends AppCompatActivity {
 
         //on install
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
-        boolean registered = sharedPreferences.getBoolean("registered", true);
+        boolean registered = sharedPreferences.getBoolean("registered", false);
+
+        MainPresenter presenter = new MainPresenter(this, sharedPreferences);
 
         if (!registered){
-            //call
-        }
+            presenter.registerDevice();
 
+            // Set the device as registered
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("registered", true);
+            editor.apply();
+        }
     }
 }

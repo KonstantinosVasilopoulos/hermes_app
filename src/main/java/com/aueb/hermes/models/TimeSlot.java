@@ -27,6 +27,10 @@ public class TimeSlot {
     @JoinColumn(name = "application_name")
     private Application application;
 
+    public TimeSlot() {
+        
+    }
+
     public TimeSlot(String uuid, String name, LocalDateTime fromTime) {
         id = new TimeSlotId(uuid, name);
         this.fromTime = fromTime;

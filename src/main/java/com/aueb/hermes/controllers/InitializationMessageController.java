@@ -31,6 +31,7 @@ public class InitializationMessageController {
     @PostMapping(path = "/register-device", consumes = "application/json")
     public ResponseEntity<String> registerDevice(@RequestBody RegisterDeviceRequestBody data) {
         // Create a new device
+        System.out.println(data.getUuid() + " " + data.getAntennaBatteryConsumption());
         Device device = new Device(data.getUuid(), data.getAntennaBatteryConsumption());
         deviceRepo.save(device);
 

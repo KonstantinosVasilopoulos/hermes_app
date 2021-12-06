@@ -14,6 +14,10 @@ public class Device {
     @OneToMany(mappedBy = "device")
     private Set<TimeSlot> timeSlots;
 
+    public Device() {
+        
+    }
+
     public Device(String uuid, float antennaBatteryUsage) {
         this.uuid = uuid;
         this.antennaBatteryUsage = antennaBatteryUsage;
