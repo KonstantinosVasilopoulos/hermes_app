@@ -2,14 +2,17 @@ package com.aueb.hermes.presenter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class MainPresenter {
@@ -44,24 +47,27 @@ public class MainPresenter {
                 //RegisterDeviceRequestBody data = new RegisterDeviceRequestBody(uuid, antennaBatteryConsumption);
 
                 try {
-                    URL url = new URL("http://localhost:8080/register-device");
+                    URL url = new URL("http://192.168.68.110:8080/register-device");
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    //to do
+                    //Log.d("conection", String.valueOf(con.getResponseCode()));
                     con.setRequestMethod("POST");
                     con.setRequestProperty("Content-Type", "application/json");
+                    con.setRequestProperty("Accept", "application/json");
                     con.setDoOutput(true);
 
                     // Package data into a JSON object
-                    JSONObject data = new JSONObject();
-                    data.put("uuid", uuid);
-                    data.put("antennaBatteryConsumption", antennaBatteryConsumption);
+                    String data = "{\"uuid\": \"asqfwrw\", \"antennaBatteryConsumption\": 2.0}";
 
                     // Write data to output stream
-                    try (OutputStreamWriter osw = new OutputStreamWriter(con.getOutputStream())) {
-                        osw.write(data.toString());
-                        osw.flush();
+                    try (OutputStream os = con.getOutputStream()) {
+                        byte[] bytes = data.getBytes();
+                        os.write(bytes, 0, bytes.length);
+                        os.flush();
+                    }finally {
+                        con.disconnect();
                     }
-
-                } catch (IOException | JSONException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
