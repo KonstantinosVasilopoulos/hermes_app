@@ -2,17 +2,10 @@ package com.aueb.hermes.presenter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class MainPresenter {
@@ -43,33 +36,32 @@ public class MainPresenter {
                 //get the wifi's active state battery consumption
                 float antennaBatteryConsumption = 2; //for testing only to be changed
 
-                //send data to server
-                //RegisterDeviceRequestBody data = new RegisterDeviceRequestBody(uuid, antennaBatteryConsumption);
-
                 try {
-                    URL url = new URL("http://192.168.68.110:8080/register-device");
+                    URL url = new URL("http://10.0.2.2:8080/register-device");
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    //to do
-                    //Log.d("conection", String.valueOf(con.getResponseCode()));
                     con.setRequestMethod("POST");
                     con.setRequestProperty("Content-Type", "application/json");
                     con.setRequestProperty("Accept", "application/json");
                     con.setDoOutput(true);
 
                     // Package data into a JSON object
-                    String data = "{\"uuid\": \"asqfwrw\", \"antennaBatteryConsumption\": 2.0}";
+                    String data = "{\"uuid\": \"" + uuid + "\", \"antennaBatteryConsumption\": \"" + antennaBatteryConsumption + "\"}";
 
                     // Write data to output stream
                     try (OutputStream os = con.getOutputStream()) {
                         byte[] bytes = data.getBytes();
                         os.write(bytes, 0, bytes.length);
                         os.flush();
+                        con.getResponseCode();
                     }finally {
                         con.disconnect();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
+
             }
         });
         thread.start();

@@ -2,8 +2,6 @@ package com.aueb.hermes;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,14 +20,13 @@ public class MainActivity extends AppCompatActivity {
 
         MainPresenter presenter = new MainPresenter(this, sharedPreferences);
 
-        //if (!registered){
-            Log.d("registering", "main activity registering");
+        if (!registered){
             presenter.registerDevice();
 
             // Set the device as registered
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("registered", true);
             editor.apply();
-        //}
+        }
     }
 }
