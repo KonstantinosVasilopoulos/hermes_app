@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>250</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+11:00
+--
+adc1psd08n
+Google Maps
+--
+3 MB
+21 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>520</x>
+      <y>250</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+12:00
+--
+adc1psd08n
+Google Maps
+--
+1.1 MB
+2 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>690</x>
+      <y>250</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+13:00
+--
+adc1psd08n
+Google Maps
+--
+0 MB
+0 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>250</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+14:00
+--
+adc1psd08n
+Google Maps
+--
+10 MB
+52 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>350</x>
+      <y>460</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+11:00
+--
+adc1psd08n
+Messenger
+--
+0.5 MB
+1.5 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>520</x>
+      <y>460</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+12:00
+--
+adc1psd08n
+Messenger
+--
+3.5 MB
+29 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>690</x>
+      <y>460</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+13:00
+--
+adc1psd08n
+Messenger
+--
+0.9 MB
+2 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>860</x>
+      <y>460</y>
+      <w>170</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>TimeSlot
+--
+19/12/2021
+14:00
+--
+adc1psd08n
+Messenger
+--
+0.2 MB
+0.5 mA</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
