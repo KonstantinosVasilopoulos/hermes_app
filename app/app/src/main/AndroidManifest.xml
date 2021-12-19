@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hermes"
         android:usesCleartextTraffic="true">
+        <service
+            android:name=".services.AntennaMonitor"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

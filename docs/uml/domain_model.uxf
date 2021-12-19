@@ -12,7 +12,7 @@
     <panel_attributes>Device
 --
 uuid : String
-antenaBatteryUsage : float</panel_attributes>
+antennaBatteryUsage : float</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
