@@ -80,7 +80,7 @@ public class MainPresenter {
     }
 
     private void collectNetworkStatistics() {
-
+        getApplications();
     }
 
     // Helper method that returns a dictionary of all available applications
@@ -93,16 +93,14 @@ public class MainPresenter {
         for (PackageInfo app : packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)) {
             if (app.requestedPermissions == null) continue;
 
-            // Get only apps that have internet permission
+            // Get only the apps which have internet permission
             for (String permission : app.requestedPermissions) {
                 if (TextUtils.equals(permission, Manifest.permission.INTERNET)) {
-                    Log.d("app info", app.applicationInfo.name);
-                    Log.d("app info", String.valueOf(app.applicationInfo.uid));
+                    apps.put(app.applicationInfo.processName, app.applicationInfo.uid);
                     break;
                 }
             }
         }
-
         return apps;
     }
 }
