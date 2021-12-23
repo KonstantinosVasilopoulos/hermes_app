@@ -1,11 +1,20 @@
 package com.aueb.hermes.presenter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.text.TextUtils;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class MainPresenter {
@@ -59,12 +68,41 @@ public class MainPresenter {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
-
             }
         });
         thread.start();
     }
 
+    // Collect network statistics, calculate battery consumption
+    // and send the data to the backend server
+    public void collectAndSendRawData() {
+        collectNetworkStatistics();
+    }
+
+    private void collectNetworkStatistics() {
+
+    }
+
+    // Helper method that returns a dictionary of all available applications
+    // Format: { name: uid  }
+    private Map<String, Integer> getApplications() {
+        Map<String, Integer> apps = new HashMap<>();
+
+        //  Use the package manager to retrieve a list of all apps installed
+        final PackageManager packageManager = this.context.getPackageManager();
+        for (PackageInfo app : packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)) {
+            if (app.requestedPermissions == null) continue;
+
+            // Get only apps that have internet permission
+            for (String permission : app.requestedPermissions) {
+                if (TextUtils.equals(permission, Manifest.permission.INTERNET)) {
+                    Log.d("app info", app.applicationInfo.name);
+                    Log.d("app info", String.valueOf(app.applicationInfo.uid));
+                    break;
+                }
+            }
+        }
+
+        return apps;
+    }
 }

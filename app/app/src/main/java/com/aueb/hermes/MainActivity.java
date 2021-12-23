@@ -28,5 +28,8 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("registered", true);
             editor.apply();
         }
+
+        // Collect and send the device's data to the server
+        presenter.collectAndSendRawData();
     }
 }
