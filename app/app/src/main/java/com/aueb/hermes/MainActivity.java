@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.aueb.hermes.presenter.MainPresenter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -14,13 +17,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //on install
+        // On install
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         boolean registered = sharedPreferences.getBoolean("registered", false);
 
         MainPresenter presenter = new MainPresenter(this, sharedPreferences);
 
-        if (!registered){
+        if (!registered) {
             presenter.registerDevice();
 
             // Set the device as registered
@@ -30,6 +33,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Collect and send the device's data to the server
-        presenter.collectAndSendRawData();
+        String lastStr = sharedPreferences.getString("last", null);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        LocalDateTime last;
+        if (lastStr == null) {
+            last = LocalDateTime.now();
+        } else {
+            last = LocalDateTime.parse(lastStr, formatter);
+        }
+        presenter.collectAndSendRawData(last);
+
+        // Update the variable storing the date and time the server was informed
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("last", LocalDateTime.now().format(formatter));
+        editor.apply();
     }
 }
