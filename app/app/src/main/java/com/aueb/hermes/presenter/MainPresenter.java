@@ -78,7 +78,7 @@ public class MainPresenter {
     public void collectAndSendRawData(LocalDateTime last) {
         // Network data
         Map<LocalDateTime, Map<String, Float>> networkUsagePerApp = collectNetworkStatistics(last);
-
+        Log.d("Network", "NUPA: " + networkUsagePerApp.toString());
         // TODO: Battery data
     }
 
@@ -94,6 +94,7 @@ public class MainPresenter {
         LocalDateTime now = LocalDateTime.now();
         now = now.withMinute(0);
         now = now.withSecond(0);
+        now = now.withNano(0);
         LocalDateTime current = last.plusHours(1);
         Map<String, Float> appUsages;
         while (current.isBefore(now)) {

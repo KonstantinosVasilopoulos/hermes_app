@@ -3,6 +3,7 @@ package com.aueb.hermes.utils;
 import android.app.usage.NetworkStats;
 import android.app.usage.NetworkStatsManager;
 import android.net.NetworkCapabilities;
+import android.util.Log;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,13 +36,22 @@ public class QueryNetworkDetailsWorker implements Runnable {
         NetworkStats details;
         for (String app : appUsages.keySet()) {
             // Query the network stats manager for usage details
-            details = networkStatsManager.queryDetailsForUid(
-                    NetworkCapabilities.TRANSPORT_WIFI,
-                    null,
-                    timeSlot.atZone(timezone).toEpochSecond(),
-                    timeSlot.plusHours(1).minusSeconds(1).atZone(timezone).toEpochSecond(),
-                    apps.get(app)
-            );
+            try {
+                details = networkStatsManager.queryDetailsForUid(
+                        NetworkCapabilities.TRANSPORT_WIFI,
+                        null,
+                        timeSlot.atZone(timezone).toEpochSecond(),
+                        timeSlot.plusHours(1).minusSeconds(1).atZone(timezone).toEpochSecond(),
+                        apps.get(app)
+                );
+            }catch (SecurityException e){
+                details = null;
+            }
+
+
+            if(details == null){
+                continue;
+            }
 
             // Iterate the details to calculate the sum of all bytes received and transmitted
             NetworkStats.Bucket bucket = new NetworkStats.Bucket();
@@ -64,6 +74,7 @@ public class QueryNetworkDetailsWorker implements Runnable {
     }
 
     public Map<String, Float> getNetworkData() {
+        Log.d("Network", networkData.toString());
         return networkData;
     }
 }
