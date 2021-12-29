@@ -113,7 +113,7 @@ public class MainPresenter {
         }
 
         // Use the network stats manager to get the statistics in question
-        NetworkStatsManager networkStatsManager = this.context.getSystemService(NetworkStatsManager.class);
+        NetworkStatsManager networkStatsManager = (NetworkStatsManager) context.getApplicationContext().getSystemService(Context.NETWORK_STATS_SERVICE);
         Map<Thread, QueryNetworkDetailsWorker> workers = new HashMap<>();
         for (LocalDateTime timeSlot : networkUsagePerApp.keySet()) {
             // Delegate tasks to worker threads

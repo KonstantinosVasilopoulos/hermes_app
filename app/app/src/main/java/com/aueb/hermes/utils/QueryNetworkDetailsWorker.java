@@ -6,7 +6,7 @@ import android.net.ConnectivityManager;
 import android.util.Log;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,18 +33,19 @@ public class QueryNetworkDetailsWorker implements Runnable {
 
     @Override
     public void run() {
-        ZoneId timezone = ZoneId.of("UTC");
-
         // For each app
         NetworkStats details;
         for (String app : appUsages.keySet()) {
             // Query the network stats manager for usage details
             try {
+                long start = timeSlot.toEpochSecond(ZoneOffset.of("+2")) * 1000L;
+                long end = timeSlot.plusHours(1).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
+                Log.d("Network", start + " - " + end);
                 details = networkStatsManager.queryDetailsForUid(
                         ConnectivityManager.TYPE_WIFI,
                         subscriberId,
-                        timeSlot.atZone(timezone).toEpochSecond(),
-                        timeSlot.plusHours(1).minusSeconds(1).atZone(timezone).toEpochSecond(),
+                        start,
+                        end,
                         apps.get(app)
                 );
             } catch (SecurityException e) {
@@ -61,7 +62,7 @@ public class QueryNetworkDetailsWorker implements Runnable {
             do {
                 details.getNextBucket(bucket);
                 traffic += bucket.getRxBytes() + bucket.getTxBytes();
-                Log.d("Network", apps.get(app) + " " + bucket.getUid() + " " + String.valueOf(bucket.getRxBytes()));
+                Log.d("Network", String.valueOf(traffic));
             } while (details.hasNextBucket());
             details.close();
 
