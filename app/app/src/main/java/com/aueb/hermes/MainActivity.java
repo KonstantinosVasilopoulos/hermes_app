@@ -1,7 +1,10 @@
 package com.aueb.hermes;
 
+import android.app.AppOpsManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +20,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Check whether the android.permission.PACKAGE_USAGE_STATS has been granted
+        AppOpsManager appOps = (AppOpsManager) getSystemService(APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), getPackageName());
+        if (mode != AppOpsManager.MODE_ALLOWED) {
+            // Request the aforementioned permission
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            startActivity(intent);
+        }
 
         // On install
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -35,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Collect and send the device's data to the server
         //String lastStr = sharedPreferences.getString("last", null);
-        String lastStr = "28-12-2021 10:00";
+        String lastStr = "29-12-2021 10:00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         LocalDateTime last;
         if (lastStr == null) {

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,6 +25,10 @@ public class MainPresenter {
 
     private final Context context;
     private final SharedPreferences sharedPreferences;
+
+    // Constants
+    private static final String BACKEND_IP_ADDRESS = "192.168.1.17:8080";
+    private static final String BACKEND_REGISTER_URL = "http://" + BACKEND_IP_ADDRESS + "/register-device";
 
     public MainPresenter(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
@@ -47,7 +52,7 @@ public class MainPresenter {
             float antennaBatteryConsumption = 2; //for testing only to be changed
 
             try {
-                URL url = new URL("http://10.0.2.2:8080/register-device");
+                URL url = new URL(BACKEND_REGISTER_URL);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-Type", "application/json");
@@ -116,7 +121,8 @@ public class MainPresenter {
                     networkUsagePerApp.get(timeSlot),
                     timeSlot,
                     networkStatsManager,
-                    apps
+                    apps,
+                    Build.VERSION.SDK_INT <= 30 ? "" : null
             );
             Thread thread = new Thread(worker);
             workers.put(thread, worker);
@@ -133,6 +139,7 @@ public class MainPresenter {
 
             // Store the new data
             QueryNetworkDetailsWorker worker = workers.get(thread);
+            assert worker != null;
             networkUsagePerApp.put(worker.getTimeSlot(), worker.getNetworkData());
         }
 
