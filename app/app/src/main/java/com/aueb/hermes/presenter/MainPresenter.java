@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -82,34 +81,36 @@ public class MainPresenter {
     // and send the data to the backend server
     public void collectAndSendRawData(LocalDateTime last) {
         // Network data
-        Map<LocalDateTime, Map<String, Float>> networkUsagePerApp = collectNetworkStatistics(last);
-        Log.d("Network", "NUPA: " + networkUsagePerApp.toString());
+        Map<LocalDateTime, Map<String, Long>> networkUsagePerApp = collectNetworkStatistics(last);
+
         // TODO: Battery data
+
+        // TODO: Package data before sending
+
+        // TODO: Send data to the backend server
     }
 
     // Collect network usage for each app
-    private Map<LocalDateTime, Map<String, Float>> collectNetworkStatistics(LocalDateTime last) {
+    private Map<LocalDateTime, Map<String, Long>> collectNetworkStatistics(LocalDateTime last) {
         // Data structure to store network usage
-        Map<LocalDateTime, Map<String, Float>> networkUsagePerApp = new HashMap<>();
+        Map<LocalDateTime, Map<String, Long>> networkUsagePerApp = new HashMap<>();
 
         // All the applications with internet access
         Map<String, Integer> apps = getApplications();
 
         // Initialize inner dictionaries
-        LocalDateTime now = LocalDateTime.now();
-        now = now.withMinute(0);
-        now = now.withSecond(0);
-        now = now.withNano(0);
-        LocalDateTime current = last.plusHours(1);
-        Map<String, Float> appUsages;
-        while (current.isBefore(now)) {
+        LocalDateTime now = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).minusHours(4);
+        LocalDateTime current = last.plusHours(4);
+        Map<String, Long> appUsages;
+        // Current must be at least 4 hours before now
+        while (current.isBefore(now) || current.equals(now)) {
             appUsages = new HashMap<>();
             for (String app : apps.keySet()) {
-                appUsages.put(app, .0f);
+                appUsages.put(app, 0L);
             }
 
             networkUsagePerApp.put(current, appUsages);
-            current = current.plusHours(1);
+            current = current.plusHours(4);
         }
 
         // Use the network stats manager to get the statistics in question
@@ -121,8 +122,7 @@ public class MainPresenter {
                     networkUsagePerApp.get(timeSlot),
                     timeSlot,
                     networkStatsManager,
-                    apps,
-                    Build.VERSION.SDK_INT <= 30 ? "" : null
+                    apps
             );
             Thread thread = new Thread(worker);
             workers.put(thread, worker);

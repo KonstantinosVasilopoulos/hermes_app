@@ -3,7 +3,7 @@ package com.aueb.hermes.utils;
 import android.app.usage.NetworkStats;
 import android.app.usage.NetworkStatsManager;
 import android.net.ConnectivityManager;
-import android.util.Log;
+import android.os.Build;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -11,23 +11,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QueryNetworkDetailsWorker implements Runnable {
-    private final Map<String, Float> appUsages;
+    private final Map<String, Long> appUsages;
     private final LocalDateTime timeSlot;
     private final NetworkStatsManager networkStatsManager;
     private final Map<String, Integer> apps;
-    private final String subscriberId;
 
     // Return value
-    private volatile Map<String, Float> networkData;
+    private volatile Map<String, Long> networkData;
 
-    public QueryNetworkDetailsWorker(Map<String, Float> appUsages, LocalDateTime timeSlot,
-                                     NetworkStatsManager networkStatsManager, Map<String, Integer> apps,
-                                     String subscriberId) {
+    public QueryNetworkDetailsWorker(Map<String, Long> appUsages, LocalDateTime timeSlot,
+                                     NetworkStatsManager networkStatsManager, Map<String, Integer> apps) {
         this.appUsages = appUsages;
         this.timeSlot = timeSlot;
         this.networkStatsManager = networkStatsManager;
         this.apps = apps;
-        this.subscriberId = subscriberId;
         this.networkData = new HashMap<>();
     }
 
@@ -39,11 +36,11 @@ public class QueryNetworkDetailsWorker implements Runnable {
             // Query the network stats manager for usage details
             try {
                 long start = timeSlot.toEpochSecond(ZoneOffset.of("+2")) * 1000L;
-                long end = timeSlot.plusHours(1).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
-                Log.d("Network", start + " - " + end);
+                long end = timeSlot.plusHours(4).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
+                // Log.d("Network", start + " - " + end);
                 details = networkStatsManager.queryDetailsForUid(
                         ConnectivityManager.TYPE_WIFI,
-                        subscriberId,
+                        Build.VERSION.SDK_INT <= 30 ? "" : null,
                         start,
                         end,
                         apps.get(app)
@@ -62,12 +59,10 @@ public class QueryNetworkDetailsWorker implements Runnable {
             do {
                 details.getNextBucket(bucket);
                 traffic += bucket.getRxBytes() + bucket.getTxBytes();
-                Log.d("Network", String.valueOf(traffic));
             } while (details.hasNextBucket());
             details.close();
 
-            // Convert bytes to MB
-            appUsages.put(app, (float) (traffic / Math.pow(1024.0, 2.0)));
+            appUsages.put(app, traffic);
         }
 
         // Set the return value
@@ -78,7 +73,7 @@ public class QueryNetworkDetailsWorker implements Runnable {
         return timeSlot;
     }
 
-    public Map<String, Float> getNetworkData() {
+    public Map<String, Long> getNetworkData() {
         return networkData;
     }
 }
