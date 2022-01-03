@@ -10,14 +10,21 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.aueb.hermes.utils.QueryNetworkDetailsWorker;
+import com.aueb.hermes.utils.TimeSlotDataPackage;
+
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 public class MainPresenter {
@@ -26,8 +33,10 @@ public class MainPresenter {
     private final SharedPreferences sharedPreferences;
 
     // Constants
-    private static final String BACKEND_IP_ADDRESS = "192.168.1.17:8080";
+    private static final String BACKEND_IP_ADDRESS = "192.168.1.20:8080";
     private static final String BACKEND_REGISTER_URL = "http://" + BACKEND_IP_ADDRESS + "/register-device";
+    private static final String BACKEND_INIT_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/init-data";
+    public static final int TIME_SLOT_SIZE = 4;  // hours
 
     public MainPresenter(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
@@ -48,7 +57,7 @@ public class MainPresenter {
             }
 
             //get the wifi's active state battery consumption
-            float antennaBatteryConsumption = 2; //for testing only to be changed
+            float antennaBatteryConsumption = 2.0f;
 
             try {
                 URL url = new URL(BACKEND_REGISTER_URL);
@@ -84,10 +93,46 @@ public class MainPresenter {
         Map<LocalDateTime, Map<String, Long>> networkUsagePerApp = collectNetworkStatistics(last);
 
         // TODO: Battery data
+        Map<LocalDateTime, Map<String, Long>> batteryUsagePerApp = collectBatteryStatistics(networkUsagePerApp.keySet());
 
-        // TODO: Package data before sending
+        // Package data before sending
+        JSONArray packages = new JSONArray();
+        for (LocalDateTime timeSlot : networkUsagePerApp.keySet()) {
+            try {
+                for (String app : networkUsagePerApp.get(timeSlot).keySet()) {
+                    packages.put(new TimeSlotDataPackage(
+                            timeSlot,
+                            app,
+                            networkUsagePerApp.get(timeSlot).get(app),
+                            batteryUsagePerApp.get(timeSlot).get(app)
+                    ).getJSONObject());
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
 
-        // TODO: Send data to the backend server
+        // Send data to the backend server
+        try {
+            URL url = new URL(BACKEND_REGISTER_URL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Accept", "application/json");
+            con.setDoOutput(true);
+
+            // Write data to output stream
+            try (OutputStream os = con.getOutputStream()) {
+                byte[] bytes = packages.toString().getBytes();
+                os.write(bytes, 0, bytes.length);
+                os.flush();
+                con.getResponseCode();
+            } finally {
+                con.disconnect();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Collect network usage for each app
@@ -99,10 +144,10 @@ public class MainPresenter {
         Map<String, Integer> apps = getApplications();
 
         // Initialize inner dictionaries
-        LocalDateTime now = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).minusHours(4);
-        LocalDateTime current = last.plusHours(4);
+        LocalDateTime now = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).minusHours(TIME_SLOT_SIZE);
+        LocalDateTime current = last.plusHours(TIME_SLOT_SIZE);
         Map<String, Long> appUsages;
-        // Current must be at least 4 hours before now
+        // Current must be at least TIME_SLOT_SIZE hours before now
         while (current.isBefore(now) || current.equals(now)) {
             appUsages = new HashMap<>();
             for (String app : apps.keySet()) {
@@ -110,7 +155,7 @@ public class MainPresenter {
             }
 
             networkUsagePerApp.put(current, appUsages);
-            current = current.plusHours(4);
+            current = current.plusHours(TIME_SLOT_SIZE);
         }
 
         // Use the network stats manager to get the statistics in question
@@ -166,4 +211,45 @@ public class MainPresenter {
         }
         return apps;
     }
+
+    private Map<LocalDateTime, Map<String, Long>> collectBatteryStatistics(Set<LocalDateTime> timeSlots) {
+        Map<LocalDateTime, Map<String, Long>> batteryUsagePerApp = new HashMap<>();
+        Map<String, Long> appConsumptions;
+        Random random = new Random();
+        for (LocalDateTime timeSlot : timeSlots) {
+            appConsumptions = new HashMap<>();
+            for (String app : getApplications().keySet()) {
+                appConsumptions.put(app, random.nextLong());
+            }
+
+            batteryUsagePerApp.put(timeSlot, appConsumptions);
+        }
+
+        return batteryUsagePerApp;
+    }
+
+    // Read the antenna's battery consumption from the power profile XML file
+    // which is present in all Android devices
+//    private float readAntennaBatteryConsumption() {
+//        final String POWER_PROFILE_XML = "/android/platform/frameworks/base/core/res/res/xml/power_profile. xml";
+//
+//        // Open the XML file
+//        Document powerProfile;
+//        try {
+//            File file = new File(POWER_PROFILE_XML);
+//            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder db = dbf.newDocumentBuilder();
+//            powerProfile = db.parse(file);
+//
+//        } catch (IOException | ParserConfigurationException | SAXException e) {
+//            Log.e("Power Profile", "Unable to open the XML file: " + e.toString());
+//            return .0f;
+//        }
+//
+//        // Extract the WiFi's active state's value
+//        NodeList items = powerProfile.getElementsByTagName("item");
+//        Log.d("Power Profile", items.toString());
+//
+//        return 0.f;
+//    }
 }

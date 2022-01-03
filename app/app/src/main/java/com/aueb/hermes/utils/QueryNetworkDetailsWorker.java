@@ -5,6 +5,8 @@ import android.app.usage.NetworkStatsManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 
+import com.aueb.hermes.presenter.MainPresenter;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
@@ -36,7 +38,7 @@ public class QueryNetworkDetailsWorker implements Runnable {
             // Query the network stats manager for usage details
             try {
                 long start = timeSlot.toEpochSecond(ZoneOffset.of("+2")) * 1000L;
-                long end = timeSlot.plusHours(4).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
+                long end = timeSlot.plusHours(MainPresenter.TIME_SLOT_SIZE).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
                 // Log.d("Network", start + " - " + end);
                 details = networkStatsManager.queryDetailsForUid(
                         ConnectivityManager.TYPE_WIFI,
