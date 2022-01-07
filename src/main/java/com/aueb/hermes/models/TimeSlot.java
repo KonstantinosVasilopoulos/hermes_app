@@ -14,10 +14,10 @@ public class TimeSlot {
     private LocalDateTime fromTime;
 
     @Column(name = "network_usage", nullable = true)
-    private float networkUsage;
+    private long networkUsage;
 
     @Column(name = "network_battery_consumption", nullable = true)
-    private float networkBatteryConsumption;
+    private long networkBatteryConsumption;
 
     @ManyToOne
     @JoinColumn(name = "device_uuid")
@@ -37,7 +37,7 @@ public class TimeSlot {
     }
 
     public TimeSlot(String uuid, String name, LocalDateTime fromTime, 
-            float networkUsage, float networkBatteryConsumption) {
+            long networkUsage, long networkBatteryConsumption) {
         this(uuid, name, fromTime);
         this.networkUsage = networkUsage;
         this.networkBatteryConsumption = networkBatteryConsumption;
@@ -52,19 +52,19 @@ public class TimeSlot {
         return fromTime;
     }
 
-    public float getNetworkUsage() {
+    public long getNetworkUsage() {
         return networkUsage;
     }
 
-    public void setNetworkUsage(float networkUsage) {
+    public void setNetworkUsage(long networkUsage) {
         this.networkUsage = networkUsage;
     }
 
-    public float getNetworkBatteryConsumption() {
+    public long getNetworkBatteryConsumption() {
         return networkBatteryConsumption;
     }
 
-    public void setNetworkBatteryConsumption(float networkBatteryConsumption) {
+    public void setNetworkBatteryConsumption(long networkBatteryConsumption) {
         this.networkBatteryConsumption = networkBatteryConsumption;
     }
 

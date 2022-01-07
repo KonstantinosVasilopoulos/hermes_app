@@ -10,18 +10,18 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.aueb.hermes.utils.QueryNetworkDetailsWorker;
-import com.aueb.hermes.utils.TimeSlotDataPackage;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -33,9 +33,9 @@ public class MainPresenter {
     private final SharedPreferences sharedPreferences;
 
     // Constants
-    private static final String BACKEND_IP_ADDRESS = "192.168.1.20:8080";
+    private static final String BACKEND_IP_ADDRESS = "192.168.1.13:8080";
     private static final String BACKEND_REGISTER_URL = "http://" + BACKEND_IP_ADDRESS + "/register-device";
-    private static final String BACKEND_INIT_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/init-data";
+    private static final String BACKEND_INIT_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/init-data/";
     public static final int TIME_SLOT_SIZE = 4;  // hours
 
     public MainPresenter(Context context, SharedPreferences sharedPreferences) {
@@ -97,42 +97,59 @@ public class MainPresenter {
 
         // Package data before sending
         JSONArray packages = new JSONArray();
+        JSONObject obj;
         for (LocalDateTime timeSlot : networkUsagePerApp.keySet()) {
             try {
                 for (String app : networkUsagePerApp.get(timeSlot).keySet()) {
-                    packages.put(new TimeSlotDataPackage(
-                            timeSlot,
-                            app,
-                            networkUsagePerApp.get(timeSlot).get(app),
-                            batteryUsagePerApp.get(timeSlot).get(app)
-                    ).getJSONObject());
+                    obj = new JSONObject();
+
+                    // Convert time slot to string
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+                    String time = timeSlot.format(formatter);
+                    obj.put("time", time);
+
+                    // Put the rest of the data inside the JSON object
+                    obj.put("app", app);
+                    obj.put("bytes", networkUsagePerApp.get(timeSlot).get(app));
+                    obj.put("consumption", batteryUsagePerApp.get(timeSlot).get(app));
+                    packages.put(obj);
                 }
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | JSONException e) {
                 e.printStackTrace();
             }
         }
 
         // Send data to the backend server
-        try {
-            URL url = new URL(BACKEND_REGISTER_URL);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("Accept", "application/json");
-            con.setDoOutput(true);
+        new Thread(() -> {
+            try {
+                // Get the device's UUID before sending
+                final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+                String uuid = sharedPreferences.getString(PREF_UNIQUE_ID, null);
+                if (uuid == null) {  // Device is not registered
+                    return;
+                }
 
-            // Write data to output stream
-            try (OutputStream os = con.getOutputStream()) {
-                byte[] bytes = packages.toString().getBytes();
-                os.write(bytes, 0, bytes.length);
-                os.flush();
-                con.getResponseCode();
-            } finally {
-                con.disconnect();
+                // Send POST request to backend server
+                URL url = new URL(BACKEND_INIT_DATA_URL + uuid);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setRequestProperty("Accept", "application/json");
+                con.setDoOutput(true);
+
+                // Write data to output stream
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] bytes = packages.toString().getBytes();
+                    os.write(bytes, 0, bytes.length);
+                    os.flush();
+                    con.getResponseCode();
+                } finally {
+                    con.disconnect();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 
     // Collect network usage for each app
@@ -216,10 +233,15 @@ public class MainPresenter {
         Map<LocalDateTime, Map<String, Long>> batteryUsagePerApp = new HashMap<>();
         Map<String, Long> appConsumptions;
         Random random = new Random();
+        long consumption;
         for (LocalDateTime timeSlot : timeSlots) {
             appConsumptions = new HashMap<>();
             for (String app : getApplications().keySet()) {
-                appConsumptions.put(app, random.nextLong());
+                consumption = random.nextLong();
+                if (consumption < 0) {
+                    consumption *= -1L;
+                }
+                appConsumptions.put(app, consumption);
             }
 
             batteryUsagePerApp.put(timeSlot, appConsumptions);

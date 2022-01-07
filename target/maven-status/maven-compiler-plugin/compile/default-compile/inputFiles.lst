@@ -4,8 +4,8 @@
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/controllers/InitializationMessageController.java
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/models/Application.java
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/repositories/ApplicationRepository.java
-/home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/utils/InitializationMessageRequestBody.java
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/repositories/DeviceRepository.java
+/home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/utils/HTTP_METHODS.java
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/repositories/TimeSlotRepository.java
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/models/TimeSlot.java
 /home/niemand/Java/hermes_app/src/main/java/com/aueb/hermes/utils/RegisterDeviceRequestBody.java

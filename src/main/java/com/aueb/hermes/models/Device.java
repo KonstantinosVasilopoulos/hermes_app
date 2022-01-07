@@ -1,5 +1,6 @@
 package com.aueb.hermes.models;
 
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,10 +16,11 @@ public class Device {
     private Set<TimeSlot> timeSlots;
 
     public Device() {
-        
+        timeSlots = new HashSet<>();
     }
 
     public Device(String uuid, float antennaBatteryUsage) {
+        this();
         this.uuid = uuid;
         this.antennaBatteryUsage = antennaBatteryUsage;
     }
@@ -33,5 +35,9 @@ public class Device {
 
     public void addTimeSlot(TimeSlot timeSlot) {
         timeSlots.add(timeSlot);
+    }
+
+    public String toString() {
+        return uuid + " " + antennaBatteryUsage;
     }
 }
