@@ -38,9 +38,21 @@ public class QueryController {
 
     // Note: The app's dots should be replaced with hyphes in order to fit URL standards
     // Hence all hyphens from the app string should be replaced again with dots
+    @GetMapping("/battery-average/{start}/{slots}/{app}")
+    public ResponseEntity<?> getBatteryAverage(@PathVariable String start, @PathVariable int slots, @PathVariable String app) {
+        return getAverageStatistics(start, slots, app, false);
+    }
+
     @GetMapping("/network-average/{start}/{slots}/{app}")
     public ResponseEntity<?> getNetworkAverage(@PathVariable String start, @PathVariable int slots, @PathVariable String app) {
-        InitializationMessageController.logConnection("/network-average", HTTP_METHODS.GET, (List<String>) List.of(start, String.valueOf(slots), app));
+        return getAverageStatistics(start, slots, app, true);
+    }
+
+    // Helper methods
+    // forNetwork: Determines whether the function will query network or battery statistics
+    private ResponseEntity<?> getAverageStatistics(String start, int slots, String app, boolean forNetwork) {
+        InitializationMessageController.logConnection("/network-average", HTTP_METHODS.GET,
+                (List<String>) List.of(start, String.valueOf(slots), app));
 
         // Replace hyphens with dots in the app string
         app = app.replaceAll("-", ".");
@@ -56,7 +68,7 @@ public class QueryController {
         LocalDateTime startTime = LocalDateTime.parse(start, formatter);
 
         // Data structures
-        Map<LocalDateTime, Long>  result = new HashMap<>();
+        Map<LocalDateTime, Long> result = new HashMap<>();
         Map<LocalDateTime, Integer> devices = new HashMap<>();
         LocalDateTime s = startTime;
         for (int i = 0; i < slots; i++) {
@@ -74,7 +86,7 @@ public class QueryController {
             // Filter out time slots that are outside the range of the starting time + slots
             if ((slot.getFromTime().isAfter(current) || slot.getFromTime().isEqual(current))
                     && slot.getFromTime().isBefore(current.plusHours(slots * TIME_SLOT_SIZE))) {
-                result.put(slot.getFromTime(), slot.getNetworkUsage());
+                result.put(slot.getFromTime(), forNetwork ? slot.getNetworkUsage() : slot.getNetworkBatteryConsumption());
                 devices.put(slot.getFromTime(), devices.get(slot.getFromTime()) + 1);
             }
         }
