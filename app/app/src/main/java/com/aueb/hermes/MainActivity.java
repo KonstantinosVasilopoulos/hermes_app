@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Update the variable storing the date and time the server was informed
         // IMPORTANT NOTE: last holds the last beginning and not the last hour documented!
-        last = LocalDateTime.now().minusHours(1).withMinute(0).withSecond(0).withNano(0);
+        last = LocalDateTime.now().minusHours(12).withMinute(0).withSecond(0).withNano(0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("last", last.format(formatter));
         editor.apply();

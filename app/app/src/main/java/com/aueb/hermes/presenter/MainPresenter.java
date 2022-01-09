@@ -33,7 +33,7 @@ public class MainPresenter {
     private final SharedPreferences sharedPreferences;
 
     // Constants
-    private static final String BACKEND_IP_ADDRESS = "192.168.1.13:8080";
+    private static final String BACKEND_IP_ADDRESS = "192.168.1.20:8080";
     private static final String BACKEND_REGISTER_URL = "http://" + BACKEND_IP_ADDRESS + "/register-device";
     private static final String BACKEND_INIT_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/init-data/";
     public static final int TIME_SLOT_SIZE = 4;  // hours

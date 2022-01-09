@@ -1,6 +1,7 @@
 package com.aueb.hermes.models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.Entity;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Column;
@@ -82,5 +83,10 @@ public class TimeSlot {
 
     public void setApplication(Application application) {
         this.application = application;
+    }
+
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:00");
+        return fromTime.format(formatter);
     }
 }

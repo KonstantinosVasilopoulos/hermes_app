@@ -100,7 +100,7 @@ public class InitializationMessageController {
 
     // Helper methods
     // Print console logs for incoming connections
-    private void logConnection(String url, HTTP_METHODS method, List<String> arguments) {
+    public static void logConnection(String url, HTTP_METHODS method, List<String> arguments) {
         // Add a starting '/' if not present
         if (!url.startsWith("/")) {
             url = "/" + url;
