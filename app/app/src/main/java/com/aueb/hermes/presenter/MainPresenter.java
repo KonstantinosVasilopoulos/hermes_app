@@ -3,6 +3,7 @@ package com.aueb.hermes.presenter;
 import android.Manifest;
 import android.app.usage.NetworkStatsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -33,14 +34,18 @@ public class MainPresenter {
     private final SharedPreferences sharedPreferences;
 
     // Constants
-    private static final String BACKEND_IP_ADDRESS = "192.168.1.20:8080";
-    private static final String BACKEND_REGISTER_URL = "http://" + BACKEND_IP_ADDRESS + "/register-device";
-    private static final String BACKEND_INIT_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/init-data/";
-    public static final int TIME_SLOT_SIZE = 4;  // hours
+    private final String BACKEND_IP_ADDRESS;
+    private final String BACKEND_REGISTER_URL;
+    private final String BACKEND_INIT_DATA_URL;
+    private final int TIME_SLOT_SIZE; // hours
 
     public MainPresenter(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
+        BACKEND_IP_ADDRESS = sharedPreferences.getString("BACKEND_IP_ADDRESS", "192.168.68.110:8080");
+        TIME_SLOT_SIZE = sharedPreferences.getInt("TIME_SLOT_SIZE", 4);
+        BACKEND_REGISTER_URL = "http://" + BACKEND_IP_ADDRESS + "/register-device";
+        BACKEND_INIT_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/init-data/";
     }
 
     public void registerDevice() {
@@ -149,6 +154,13 @@ public class MainPresenter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            //notify main activity about the process ending
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.INIT_FINISHED");
+            context.sendBroadcast(intent);
+            Log.d("receiver", "calling");
+
         }).start();
     }
 
@@ -184,7 +196,8 @@ public class MainPresenter {
                     networkUsagePerApp.get(timeSlot),
                     timeSlot,
                     networkStatsManager,
-                    apps
+                    apps,
+                    TIME_SLOT_SIZE
             );
             Thread thread = new Thread(worker);
             workers.put(thread, worker);

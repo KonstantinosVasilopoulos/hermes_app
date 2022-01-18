@@ -17,17 +17,20 @@ public class QueryNetworkDetailsWorker implements Runnable {
     private final LocalDateTime timeSlot;
     private final NetworkStatsManager networkStatsManager;
     private final Map<String, Integer> apps;
+    private final int TIME_SLOT_SIZE;
+
 
     // Return value
     private volatile Map<String, Long> networkData;
 
     public QueryNetworkDetailsWorker(Map<String, Long> appUsages, LocalDateTime timeSlot,
-                                     NetworkStatsManager networkStatsManager, Map<String, Integer> apps) {
+                                     NetworkStatsManager networkStatsManager, Map<String, Integer> apps, int TIME_SLOT_SIZE) {
         this.appUsages = appUsages;
         this.timeSlot = timeSlot;
         this.networkStatsManager = networkStatsManager;
         this.apps = apps;
         this.networkData = new HashMap<>();
+        this.TIME_SLOT_SIZE = TIME_SLOT_SIZE;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class QueryNetworkDetailsWorker implements Runnable {
             // Query the network stats manager for usage details
             try {
                 long start = timeSlot.toEpochSecond(ZoneOffset.of("+2")) * 1000L;
-                long end = timeSlot.plusHours(MainPresenter.TIME_SLOT_SIZE).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
+                long end = timeSlot.plusHours(TIME_SLOT_SIZE).minusSeconds(1).toEpochSecond(ZoneOffset.of("+2")) * 1000L;
                 // Log.d("Network", start + " - " + end);
                 details = networkStatsManager.queryDetailsForUid(
                         ConnectivityManager.TYPE_WIFI,

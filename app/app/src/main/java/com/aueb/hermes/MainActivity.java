@@ -1,7 +1,9 @@
 package com.aueb.hermes;
 
 import android.app.AppOpsManager;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -9,11 +11,15 @@ import android.provider.Settings;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.aueb.hermes.presenter.MainPresenter;
+import com.aueb.hermes.utils.InitFinishedReceiver;
+import com.aueb.hermes.view.StatisticsDisplayActivity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class MainActivity extends AppCompatActivity {
+
+    private InitFinishedReceiver mInitFinishedReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,14 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        String lastStr = null;
 
         // On install
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
@@ -41,13 +55,18 @@ public class MainActivity extends AppCompatActivity {
             // Set the device as registered
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("registered", true);
+
+            //initialize constant values
+            editor.putString("BACKEND_IP_ADDRESS", "192.168.68.110:8080");
+            editor.putInt("TIME_SLOT_SIZE", 4);
+            lastStr = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).format(formatter);
+            editor.putString("last", lastStr);
             editor.apply();
         }
 
         // Collect and send the device's data to the server
-        //String lastStr = sharedPreferences.getString("last", null)
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        String lastStr = LocalDateTime.now().withHour(2).withMinute(0).withSecond(0).withNano(0).format(formatter);
+        lastStr = sharedPreferences.getString("last", null);
+        //lastStr = LocalDateTime.now().withHour(2).withMinute(0).withSecond(0).withNano(0).format(formatter);
         LocalDateTime last;
         if (lastStr == null) {
             last = LocalDateTime.now();
@@ -62,5 +81,22 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("last", last.format(formatter));
         editor.apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        IntentFilter intentFilter = new IntentFilter("android.intent.action.INIT_FINISHED");
+        mInitFinishedReceiver = new InitFinishedReceiver();
+        registerReceiver(mInitFinishedReceiver, intentFilter);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        unregisterReceiver(mInitFinishedReceiver);
     }
 }
