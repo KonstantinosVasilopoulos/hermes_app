@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.aueb.hermes.models.Application;
 import com.aueb.hermes.models.TimeSlot;
+import com.aueb.hermes.models.Device;
 import com.aueb.hermes.repositories.ApplicationRepository;
 import com.aueb.hermes.repositories.DeviceRepository;
 import com.aueb.hermes.repositories.TimeSlotRepository;
@@ -35,6 +36,7 @@ public class QueryController {
 
     // Constants
     private final int TIME_SLOT_SIZE = 4; // hours
+    private final String DATE_TIME_STRING_FORMAT = "dd-MM-yyyy-HH";
 
     // Note: The app's dots should be replaced with hyphes in order to fit URL standards
     // Hence all hyphens from the app string should be replaced again with dots
@@ -46,6 +48,16 @@ public class QueryController {
     @GetMapping("/network-average/{start}/{slots}/{app}")
     public ResponseEntity<?> getNetworkAverage(@PathVariable String start, @PathVariable int slots, @PathVariable String app) {
         return getAverageStatistics(start, slots, app, true);
+    }
+
+    @GetMapping("/battery/{start}/{slots}/{uuid}/{app}")
+    public ResponseEntity<?> getBattery(@PathVariable String start, @PathVariable int slots, @PathVariable String uuid, @PathVariable String app) {
+        return getStatistics(start, slots, uuid, app, false);
+    }
+
+    @GetMapping("/network/{start}/{slots}/{uuid}/{app}")
+    public ResponseEntity<?> getNetwork(@PathVariable String start, @PathVariable int slots, @PathVariable String uuid, @PathVariable String app) {
+        return getStatistics(start, slots, uuid, app, true);
     }
 
     // Helper methods
@@ -64,7 +76,7 @@ public class QueryController {
         }
 
         // Parse the datetime of the initial time slot
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_STRING_FORMAT);
         LocalDateTime startTime = LocalDateTime.parse(start, formatter);
 
         // Data structures
@@ -108,6 +120,60 @@ public class QueryController {
             body.put(time.format(formatter), result.get(time));
         }
 
+        return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
+
+    private ResponseEntity<?> getStatistics(String start, int slots, String uuid, String app, boolean forNetwork) {
+        InitializationMessageController.logConnection("/battery", HTTP_METHODS.GET,
+                (List<String>) List.of(start, String.valueOf(slots), uuid, app));
+
+        // Replace hyphens with dots in the app string
+        app = app.replaceAll("-", ".");
+
+        // Make sure the requested app exists
+        Optional<Application> application = applicationRepo.findById(app);
+        if (!application.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Parse the datetime of the initial time slot
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_STRING_FORMAT);
+        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
+
+        // Get the device while making sure such a device exists
+        Optional<Device> device = deviceRepo.findById(uuid);
+        if (!device.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Data structures
+        Map<LocalDateTime, Long> result = new HashMap<>();
+        LocalDateTime s = startTime;
+        for (int i = 0; i < slots; i++) {
+            // Zero is the default value
+            result.put(s, 0L);
+
+            // Go to the next slot
+            s = s.plusHours(TIME_SLOT_SIZE);
+        }
+
+        // Iterate over the time slots and get the values for that specific device
+        LocalDateTime current = startTime;
+        for (TimeSlot slot : timeSlotRepo.findByApplicationAndDevice(application.get(), device.get())) {
+            // Filter out time slots that are outside the range of the starting time + slots
+            if ((slot.getFromTime().isAfter(current) || slot.getFromTime().isEqual(current))
+                    && slot.getFromTime().isBefore(current.plusHours(slots * TIME_SLOT_SIZE))) {
+                result.put(slot.getFromTime(), forNetwork ? slot.getNetworkUsage() : slot.getNetworkBatteryConsumption());
+            }
+        }
+
+        // Convert LocalDateTime instances to strings
+        Map<String, Long> body = new HashMap<>();
+        for (LocalDateTime time : result.keySet()) {
+            body.put(time.format(formatter), result.get(time));
+        }
+
+        // Return query results
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 }
