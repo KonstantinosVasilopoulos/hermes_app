@@ -8,15 +8,13 @@ import android.util.Log;
 
 import com.aueb.hermes.view.StatisticsDisplayActivity;
 
-public class InitFinishedReceiver extends BroadcastReceiver {
+public class StatisticsReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "InitFinishedReceiver";
+    private static final String TAG = "StatisticsReceiver";
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
-        //redirect to app's display page
-        Intent displayIntent = new Intent(context, StatisticsDisplayActivity.class);
-        context.startActivity(displayIntent);
+        Log.d(TAG, intent.getAction());
     }
 }

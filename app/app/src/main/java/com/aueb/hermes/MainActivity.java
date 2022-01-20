@@ -1,7 +1,6 @@
 package com.aueb.hermes;
 
 import android.app.AppOpsManager;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.aueb.hermes.presenter.MainPresenter;
 import com.aueb.hermes.utils.InitFinishedReceiver;
-import com.aueb.hermes.view.StatisticsDisplayActivity;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        String lastStr = null;
+        String lastStr;
 
         // On install
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);

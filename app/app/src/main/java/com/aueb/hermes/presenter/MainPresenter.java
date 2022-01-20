@@ -159,7 +159,6 @@ public class MainPresenter {
             Intent intent = new Intent();
             intent.setAction("android.intent.action.INIT_FINISHED");
             context.sendBroadcast(intent);
-            Log.d("receiver", "calling");
 
         }).start();
     }

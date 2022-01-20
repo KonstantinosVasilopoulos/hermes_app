@@ -1,9 +1,12 @@
 package com.aueb.hermes.view;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.aueb.hermes.R;
+import com.aueb.hermes.utils.InitFinishedReceiver;
+import com.aueb.hermes.utils.StatisticsReceiver;
 import com.aueb.hermes.utils.ViewPageAdapter;
 import com.google.android.material.tabs.TabLayout;
 
@@ -16,6 +19,7 @@ public class StatisticsDisplayActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private ViewPageAdapter mViewPageAdapter;
+    private StatisticsReceiver mStatisticsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,5 +35,23 @@ public class StatisticsDisplayActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        IntentFilter intentFilter = new IntentFilter("android.intent.action.PERSONAL_NETWORK_FINISHED");
+        mStatisticsReceiver = new StatisticsReceiver();
+        registerReceiver(mStatisticsReceiver, intentFilter);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        unregisterReceiver(mStatisticsReceiver);
+    }
+
 }
 
