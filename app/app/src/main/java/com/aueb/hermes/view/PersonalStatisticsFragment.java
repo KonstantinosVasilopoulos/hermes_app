@@ -5,20 +5,25 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.aueb.hermes.R;
 import com.aueb.hermes.presenter.PersonalStatisticsPresenter;
+import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 public class PersonalStatisticsFragment extends Fragment {
 
-    private LineGraphSeries<DataPoint> seriesPersonalNetwork;
-
+    private LineGraphSeries<DataPoint> mPersonalNetworkSeries;
+    private LinearLayout mScrollLayout;
+    private boolean viewCreated;
 
     public PersonalStatisticsFragment() {
         // Required empty public constructor
@@ -30,7 +35,9 @@ public class PersonalStatisticsFragment extends Fragment {
 
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics("network/20-01-2022-05/1/764e8ee1-7313-4810-a8b7-72a2444445ad/com-samsung-ucs-agent-boot");
+        personalStatisticsPresenter.getStatistics("network/20-01-2022-18/1/ef0e5962-0963-4a1a-8e7b-80922c3700f0/com-samsung-android-scloud", "android.intent.action.PERSONAL_NETWORK_FINISHED");
+
+        mScrollLayout = this.getActivity().findViewById(R.id.personal_statistics_layout);
     }
 
     @Override
@@ -42,13 +49,29 @@ public class PersonalStatisticsFragment extends Fragment {
 
     @Override
     public void onStart() {
-
         super.onStart();
+
+        viewCreated = true;
     }
 
+    // Replace the network loading spinner with the network graph
+    public void displayNetworkGraph() {
+        // TODO: This method is called before onStart!
+        while (!viewCreated) {
+            continue;
+        }
+        //  Remove the loading spinner
+        ProgressBar loadingSpinner = getView().findViewById(R.id.personalNetworkProgressBar);
+        mScrollLayout.removeView(loadingSpinner);
 
-    public void setSeriesPersonalNetwork( LineGraphSeries<DataPoint> seriesPersonalNetwork){
-        this.seriesPersonalNetwork = seriesPersonalNetwork;
+        // Add a new graph
+        GraphView graph = new GraphView(this.getActivity());
+        graph.addSeries(mPersonalNetworkSeries);
+        mScrollLayout.addView(graph);
     }
 
+    // Setter
+    public void setPersonalNetworkSeries(LineGraphSeries<DataPoint> mPersonalNetworkSeries){
+        this.mPersonalNetworkSeries = mPersonalNetworkSeries;
+    }
 }

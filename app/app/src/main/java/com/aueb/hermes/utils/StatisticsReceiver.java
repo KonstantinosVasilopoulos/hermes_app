@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.aueb.hermes.view.StatisticsDisplayActivity;
 
@@ -15,6 +14,11 @@ public class StatisticsReceiver extends BroadcastReceiver {
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, intent.getAction());
+        StatisticsDisplayActivity activity = (StatisticsDisplayActivity) context;
+        switch (intent.getAction()) {
+            case "android.intent.action.PERSONAL_NETWORK_FINISHED":
+                activity.displayNetworkGraph();
+                break;
+        }
     }
 }

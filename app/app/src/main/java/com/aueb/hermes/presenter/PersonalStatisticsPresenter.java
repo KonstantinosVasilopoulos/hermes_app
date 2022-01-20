@@ -24,7 +24,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class PersonalStatisticsPresenter {
 
@@ -44,7 +43,7 @@ public class PersonalStatisticsPresenter {
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH");
     }
 
-    public void getStatistics(String URL){
+    public void getStatistics(String URL, String action){
 
         final JSONObject[] data = new JSONObject[1];
 
@@ -82,14 +81,13 @@ public class PersonalStatisticsPresenter {
                             e.printStackTrace();
                         }
                     }
-                    ((PersonalStatisticsFragment) parent).setSeriesPersonalNetwork(series);
+                    ((PersonalStatisticsFragment) parent).setPersonalNetworkSeries(series);
                 }
 
                 //notify the view that the query was completed
                 Intent intent = new Intent();
-                intent.setAction("android.intent.action.PERSONAL_NETWORK_FINISHED");
+                intent.setAction(action);
                 parent.getActivity().sendBroadcast(intent);
-                Log.d("receiver", "calling");
 
             } catch (IOException | JSONException e) {
                 e.printStackTrace();

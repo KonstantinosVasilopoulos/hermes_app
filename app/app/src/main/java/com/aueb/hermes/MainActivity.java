@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("registered", true);
 
             //initialize constant values
-            editor.putString("BACKEND_IP_ADDRESS", "192.168.68.110:8080");
+            editor.putString("BACKEND_IP_ADDRESS", "192.168.1.3:8080");
             editor.putInt("TIME_SLOT_SIZE", 4);
             lastStr = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).format(formatter);
             editor.putString("last", lastStr);
