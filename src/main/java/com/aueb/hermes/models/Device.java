@@ -3,6 +3,7 @@ package com.aueb.hermes.models;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -12,7 +13,7 @@ public class Device {
     private String uuid;
     private float antennaBatteryUsage;
 
-    @OneToMany(mappedBy = "device")
+    @OneToMany(mappedBy = "id.device", fetch = FetchType.EAGER)
     private Set<TimeSlot> timeSlots;
 
     public Device() {

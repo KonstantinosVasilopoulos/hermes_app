@@ -9,7 +9,7 @@ import com.aueb.hermes.models.TimeSlotId;
 import java.util.List;
 
  public interface TimeSlotRepository extends JpaRepository<TimeSlot, TimeSlotId> {
-    List<TimeSlot> findByApplication(Application application);
+    List<TimeSlot> findByIdApplication(Application application);
 
-    List<TimeSlot> findByApplicationAndDevice(Application application, Device device);
+    List<TimeSlot> findByIdApplicationAndIdDevice(Application application, Device device);
 }

@@ -3,6 +3,7 @@ package com.aueb.hermes.models;
 import java.util.Set;
 import java.util.HashSet;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -11,7 +12,7 @@ public class Application {
     @Id
     private String name;
 
-    @OneToMany(mappedBy = "application")
+    @OneToMany(mappedBy = "id.application", fetch = FetchType.EAGER)
     private Set<TimeSlot> timeSlots;
 
     public Application() {

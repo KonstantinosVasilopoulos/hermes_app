@@ -35,7 +35,7 @@ public class PersonalStatisticsFragment extends Fragment {
 
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics("network/20-01-2022-18/1/ef0e5962-0963-4a1a-8e7b-80922c3700f0/com-samsung-android-scloud", "android.intent.action.PERSONAL_NETWORK_FINISHED");
+        personalStatisticsPresenter.getStatistics("network/21-01-2022-05/1/e5236952-79fd-41a3-9229-fe3950d5c265/com-samsung-android-scloud", "android.intent.action.PERSONAL_NETWORK_FINISHED");
 
         mScrollLayout = this.getActivity().findViewById(R.id.personal_statistics_layout);
     }

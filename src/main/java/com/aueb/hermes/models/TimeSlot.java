@@ -5,14 +5,11 @@ import java.time.format.DateTimeFormatter;
 import javax.persistence.Entity;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
 
 @Entity
 public class TimeSlot {
     @EmbeddedId
     private TimeSlotId id;
-    private LocalDateTime fromTime;
 
     @Column(name = "network_usage", nullable = true)
     private long networkUsage;
@@ -20,26 +17,17 @@ public class TimeSlot {
     @Column(name = "network_battery_consumption", nullable = true)
     private long networkBatteryConsumption;
 
-    @ManyToOne
-    @JoinColumn(name = "device_uuid")
-    private Device device;
-
-    @ManyToOne
-    @JoinColumn(name = "application_name")
-    private Application application;
-
     public TimeSlot() {
         
     }
 
-    public TimeSlot(String uuid, String name, LocalDateTime fromTime) {
-        id = new TimeSlotId(uuid, name);
-        this.fromTime = fromTime;
+    public TimeSlot(Device device, Application application, LocalDateTime fromTime) {
+        id = new TimeSlotId(device, application, fromTime);
     }
 
-    public TimeSlot(String uuid, String name, LocalDateTime fromTime, 
+    public TimeSlot(Device device, Application application, LocalDateTime fromTime, 
             long networkUsage, long networkBatteryConsumption) {
-        this(uuid, name, fromTime);
+        this(device, application, fromTime);
         this.networkUsage = networkUsage;
         this.networkBatteryConsumption = networkBatteryConsumption;
     }
@@ -50,7 +38,7 @@ public class TimeSlot {
     }
 
     public LocalDateTime getFromTime() {
-        return fromTime;
+        return id.getFromTime();
     }
 
     public long getNetworkUsage() {
@@ -70,23 +58,23 @@ public class TimeSlot {
     }
 
     public Device getDevice() {
-        return device;
+        return id.getDevice();
     }
 
     public void setDevice(Device device) {
-        this.device = device;
+        id.setDevice(device);
     }
 
     public Application getApplication() {
-        return application;
+        return id.getApplication();
     }
 
     public void setApplication(Application application) {
-        this.application = application;
+        id.setApplication(application);
     }
 
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:00");
-        return fromTime.format(formatter);
+        return id.getFromTime().format(formatter);
     }
 }

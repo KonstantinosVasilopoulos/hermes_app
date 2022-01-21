@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -45,11 +46,9 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("Prefs", MODE_PRIVATE);
         boolean registered = sharedPreferences.getBoolean("registered", false);
 
-        MainPresenter presenter = new MainPresenter(this, sharedPreferences);
+        MainPresenter presenter;
 
         if (!registered) {
-            presenter.registerDevice();
-
             // Set the device as registered
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("registered", true);
@@ -60,6 +59,12 @@ public class MainActivity extends AppCompatActivity {
             lastStr = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).format(formatter);
             editor.putString("last", lastStr);
             editor.apply();
+
+            presenter = new MainPresenter(this, sharedPreferences);
+            presenter.registerDevice();
+
+        } else {
+            presenter = new MainPresenter(this, sharedPreferences);
         }
 
         // Collect and send the device's data to the server

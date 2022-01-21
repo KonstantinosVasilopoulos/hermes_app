@@ -1,31 +1,56 @@
 package com.aueb.hermes.models;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import javax.persistence.Embeddable;
 import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 
 @Embeddable
 public class TimeSlotId implements Serializable {
-    @Column(name = "uuid", nullable = false)
-    private String uuid;
+    @ManyToOne
+    @JoinColumn(name = "device_uuid", nullable = false)
+    private Device device;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "application_name", nullable = false)
+    private Application application;
+
+    @Column(name = "from_time", nullable = false)
+    private LocalDateTime fromTime;
 
     public TimeSlotId() {
         
     }
 
-    public TimeSlotId(String uuid, String name) {
-        this.uuid = uuid;
-        this.name = name;
+    public TimeSlotId(Device device, Application application, LocalDateTime fromTime) {
+        this.device = device;
+        this.application = application;
+        this.fromTime = fromTime;
     }
 
-    public String getUuid() {
-        return uuid;
+    public Device getDevice() {
+        return device;
     }
 
-    public String getName() {
-        return name;
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    public Application getApplication() {
+        return application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    public LocalDateTime getFromTime() {
+        return fromTime;
+    }
+
+    public void setFromTime(LocalDateTime fromTime) {
+        this.fromTime = fromTime;
     }
 }

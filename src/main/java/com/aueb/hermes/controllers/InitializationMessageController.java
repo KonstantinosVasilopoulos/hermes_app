@@ -80,11 +80,9 @@ public class InitializationMessageController {
                 consumption = obj.getLong("consumption");
 
                 // Create a new time slot and wire it with the other models
-                TimeSlot timeSlot = new TimeSlot(uuid, app, time, bytes, consumption);
                 Device device = deviceRepo.findByUuid(uuid);
                 Application application = applicationRepo.findById(app).get();
-                timeSlot.setDevice(device);
-                timeSlot.setApplication(application);
+                TimeSlot timeSlot = new TimeSlot(device, application, time, bytes, consumption);
                 timeSlotRepo.save(timeSlot);
                 device.addTimeSlot(timeSlot);
                 application.addTimeSlot(timeSlot);

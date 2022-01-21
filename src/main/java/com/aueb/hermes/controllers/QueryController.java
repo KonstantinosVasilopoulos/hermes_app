@@ -94,7 +94,7 @@ public class QueryController {
 
         // Find the sum of all consumption per time slot and the number devices having the requested app
         LocalDateTime current = startTime;
-        for (TimeSlot slot : timeSlotRepo.findByApplication(application.get())) {
+        for (TimeSlot slot : timeSlotRepo.findByIdApplication(application.get())) {
             // Filter out time slots that are outside the range of the starting time + slots
             if ((slot.getFromTime().isAfter(current) || slot.getFromTime().isEqual(current))
                     && slot.getFromTime().isBefore(current.plusHours(slots * TIME_SLOT_SIZE))) {
@@ -159,7 +159,7 @@ public class QueryController {
 
         // Iterate over the time slots and get the values for that specific device
         LocalDateTime current = startTime;
-        for (TimeSlot slot : timeSlotRepo.findByApplicationAndDevice(application.get(), device.get())) {
+        for (TimeSlot slot : timeSlotRepo.findByIdApplicationAndIdDevice(application.get(), device.get())) {
             // Filter out time slots that are outside the range of the starting time + slots
             if ((slot.getFromTime().isAfter(current) || slot.getFromTime().isEqual(current))
                     && slot.getFromTime().isBefore(current.plusHours(slots * TIME_SLOT_SIZE))) {
