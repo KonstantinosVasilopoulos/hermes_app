@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +19,13 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.Iterator;
+
 public class PersonalStatisticsFragment extends Fragment {
 
-    private LineGraphSeries<DataPoint> mPersonalNetworkSeries;
+    private volatile LineGraphSeries<DataPoint> mPersonalNetworkSeries;
     private LinearLayout mScrollLayout;
-    private boolean viewCreated;
+    private boolean mDisplayNetworkGraph;
 
     public PersonalStatisticsFragment() {
         // Required empty public constructor
@@ -35,9 +37,7 @@ public class PersonalStatisticsFragment extends Fragment {
 
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics("network/21-01-2022-05/1/e5236952-79fd-41a3-9229-fe3950d5c265/com-samsung-android-scloud", "android.intent.action.PERSONAL_NETWORK_FINISHED");
-
-        mScrollLayout = this.getActivity().findViewById(R.id.personal_statistics_layout);
+        personalStatisticsPresenter.getStatistics("network/21-01-2022-05/2/e5236952-79fd-41a3-9229-fe3950d5c265/com-samsung-android-scloud", "android.intent.action.PERSONAL_NETWORK_FINISHED");
     }
 
     @Override
@@ -51,27 +51,40 @@ public class PersonalStatisticsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        viewCreated = true;
+        mScrollLayout = getView().findViewById(R.id.personal_statistics_layout);
+
+        while (mPersonalNetworkSeries == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        displayNetworkGraph();
+        for (Iterator<DataPoint> it = mPersonalNetworkSeries.getValues(0, 1); it.hasNext();) {
+            DataPoint point = it.next();
+            Log.d("personal", point.toString());
+        }
     }
 
     // Replace the network loading spinner with the network graph
     public void displayNetworkGraph() {
-        // TODO: This method is called before onStart!
-        while (!viewCreated) {
-            continue;
-        }
         //  Remove the loading spinner
         ProgressBar loadingSpinner = getView().findViewById(R.id.personalNetworkProgressBar);
         mScrollLayout.removeView(loadingSpinner);
 
         // Add a new graph
-        GraphView graph = new GraphView(this.getActivity());
+        GraphView graph = getView().findViewById(R.id.personal_network_graph);
         graph.addSeries(mPersonalNetworkSeries);
-        mScrollLayout.addView(graph);
     }
 
-    // Setter
+    // Getters & setters
     public void setPersonalNetworkSeries(LineGraphSeries<DataPoint> mPersonalNetworkSeries){
         this.mPersonalNetworkSeries = mPersonalNetworkSeries;
+    }
+
+    public void setDisplayNetworkGraph(boolean value) {
+        mDisplayNetworkGraph = value;
     }
 }

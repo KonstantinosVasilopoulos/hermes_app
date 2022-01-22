@@ -50,6 +50,6 @@ public class StatisticsDisplayActivity extends AppCompatActivity {
     }
 
     public void displayNetworkGraph() {
-        ((PersonalStatisticsFragment) mViewPageAdapter.getItem(0)).displayNetworkGraph();
+        ((PersonalStatisticsFragment) mViewPageAdapter.getItem(0)).setDisplayNetworkGraph(true);
     }
 }

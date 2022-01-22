@@ -2,7 +2,6 @@ package com.aueb.hermes.presenter;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 
@@ -23,7 +22,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class PersonalStatisticsPresenter {
 
@@ -65,21 +66,42 @@ public class PersonalStatisticsPresenter {
                 }
 
                 data[0] = new JSONObject(response.toString());
-                Log.d("personal", data[0].toString());
 
                 if (data[0].length() > 0){
-                    LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();
+                    LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
                     Iterator<String> iter = data[0].keys();
                     String key;
+                    Map<Date, Long> points = new HashMap<>();
                     while (iter.hasNext()){
                         key = iter.next();
                         LocalDateTime localTime = LocalDateTime.parse(key, formatter);
                         Instant instant = localTime.toInstant(ZoneOffset.UTC);
                         try {
-                            series.appendData(new DataPoint(Date.from(instant), data[0].getLong(key)), true, data[0].length(), false);
+                            points.put(Date.from(instant), data[0].getLong(key));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    }
+
+                    // Sort data points according to date
+                    Date[] dates = new Date[points.size()];
+                    int k = 0;
+                    for (Date date : points.keySet()) {
+                        dates[k++] = date;
+                    }
+                    Date temp;
+                    for (int i = 0; i < dates.length; i++) {
+                        for (int j = 0; j < dates.length - i - 1; j++) {
+                            if (dates[j].compareTo(dates[j + 1]) > 0) {
+                                temp = dates[j];
+                                dates[j] = dates[j + 1];
+                                dates[j + 1] = temp;
+                            }
+                        }
+                    }
+
+                    for (Date date : dates) {
+                        series.appendData(new DataPoint(date, points.get(date)), true, dates.length, false);
                     }
                     ((PersonalStatisticsFragment) parent).setPersonalNetworkSeries(series);
                 }
