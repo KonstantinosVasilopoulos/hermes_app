@@ -54,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("registered", true);
 
             //initialize constant values
-            editor.putString("BACKEND_IP_ADDRESS", "192.168.68.110:8080");
+            editor.putString("BACKEND_IP_ADDRESS", "192.168.1.16:8080");
             editor.putInt("TIME_SLOT_SIZE", 4);
-            lastStr = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).format(formatter);
+            lastStr = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).format(formatter);
             editor.putString("last", lastStr);
             editor.apply();
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Update the variable storing the date and time the server was informed
         // IMPORTANT NOTE: last holds the last beginning and not the last hour documented!
-        last = LocalDateTime.now().minusHours(12).withMinute(0).withSecond(0).withNano(0);
+        last = LocalDateTime.now().withHour(20).withMinute(0).withSecond(0).withNano(0).minusDays(1);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("last", last.format(formatter));
         editor.apply();

@@ -50,15 +50,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".utils.StatisticsReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PERSONAL_NETWORK_FINISHED" />
-                <action android:name="android.intent.action.PERSONAL_BATTERY_FINISHED" />
-                <action android:name="android.intent.action.AVERAGE_NETWORK_FINISHED" />
-                <action android:name="android.intent.action.AVERAGE_BATTERY_FINISHED" />
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>

@@ -7,11 +7,10 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.aueb.hermes.R;
@@ -20,13 +19,11 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.util.Iterator;
-
 public class PersonalStatisticsFragment extends Fragment {
 
     private volatile LineGraphSeries<DataPoint> mPersonalNetworkSeries;
-    private LinearLayout mScrollLayout;
-    private boolean mDisplayNetworkGraph;
+    private FrameLayout mRoot;
+    private boolean mDisplayingGraphs;
 
     public PersonalStatisticsFragment() {
         // Required empty public constructor
@@ -38,7 +35,8 @@ public class PersonalStatisticsFragment extends Fragment {
 
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics("network/23-01-2022-03/1/1ae50294-501e-4cd2-9eed-608135ce5e0e/com-samsung-android-SettingsReceiver", "android.intent.action.PERSONAL_NETWORK_FINISHED");
+        personalStatisticsPresenter.getStatistics("network/23-01-2022-00/4/b0bae7e7-fbfb-4a80-a475-da55b4955913/com-google-android-youtube");
+//    2022-01-23 00:00:00 |         6174466759976182808 |         14823 | b0bae7e7-fbfb-4a80-a475-da55b4955913 | com.google.android.youtube
     }
 
     @Override
@@ -52,20 +50,18 @@ public class PersonalStatisticsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        mScrollLayout = getView().findViewById(R.id.personal_statistics_layout);
+        mRoot = getView().findViewById(R.id.personal_fragment_root);
 
-        while (mPersonalNetworkSeries == null) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (!mDisplayingGraphs) {
+            while (mPersonalNetworkSeries == null) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }
 
-        displayNetworkGraph();
-        for (Iterator<DataPoint> it = mPersonalNetworkSeries.getValues(0, 1); it.hasNext();) {
-            DataPoint point = it.next();
-            Log.d("personal", point.toString());
+            displayNetworkGraph();
         }
     }
 
@@ -73,31 +69,32 @@ public class PersonalStatisticsFragment extends Fragment {
     public void displayNetworkGraph() {
         //  Remove the loading spinner
         ProgressBar loadingSpinner = getView().findViewById(R.id.personalNetworkProgressBar);
-        mScrollLayout.removeView(loadingSpinner);
+        mRoot.removeView(loadingSpinner);
 
         // Add a new graph
-        GraphView graph = getView().findViewById(R.id.personal_network_graph);
-        //graph.addSeries(mPersonalNetworkSeries);
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
-        });
-        series.setTitle("Random Curve 1");
-        series.setColor(Color.GREEN);
-        series.setDrawDataPoints(true);
-        series.setDataPointsRadius(10);
-        series.setThickness(8);
+        GraphView graph = new GraphView(this.getActivity());
+        graph.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        graph.getViewport().setScalable(true);
+        graph.getViewport().setScalableY(true);
+        graph.getViewport().setScrollableY(true);
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(mPersonalNetworkSeries.getHighestValueX());
+        mPersonalNetworkSeries.setTitle("Random Curve 1");
+        mPersonalNetworkSeries.setColor(Color.BLUE);
+        mPersonalNetworkSeries.setDrawDataPoints(true);
+        mPersonalNetworkSeries.setDataPointsRadius(10);
+        mPersonalNetworkSeries.setThickness(8);
+        graph.addSeries(mPersonalNetworkSeries);
+        mRoot.addView(graph);
+
+        mDisplayingGraphs = true;
     }
 
     // Getters & setters
     public void setPersonalNetworkSeries(LineGraphSeries<DataPoint> mPersonalNetworkSeries){
         this.mPersonalNetworkSeries = mPersonalNetworkSeries;
-    }
-
-    public void setDisplayNetworkGraph(boolean value) {
-        mDisplayNetworkGraph = value;
     }
 }

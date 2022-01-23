@@ -3,38 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/personal_fragment_root"
     tools:context=".view.PersonalStatisticsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <ScrollView
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment" />
 
-        <LinearLayout
-            android:id="@+id/personal_statistics_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/hello_blank_fragment" />
-
-            <ProgressBar
-                android:id="@+id/personalNetworkProgressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="117dp" />
-
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/personal_network_graph"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-
-        </LinearLayout>
-    </ScrollView>
+    <ProgressBar
+        android:id="@+id/personalNetworkProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="120dp" />
 
 </FrameLayout>

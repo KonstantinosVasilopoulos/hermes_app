@@ -42,30 +42,35 @@ public class QueryController {
     // Hence all hyphens from the app string should be replaced again with dots
     @GetMapping("/battery-average/{start}/{slots}/{app}")
     public ResponseEntity<?> getBatteryAverage(@PathVariable String start, @PathVariable int slots, @PathVariable String app) {
+        InitializationMessageController.logConnection("/battery-average", HTTP_METHODS.GET,
+                (List<String>) List.of(start, String.valueOf(slots), app));
         return getAverageStatistics(start, slots, app, false);
     }
 
     @GetMapping("/network-average/{start}/{slots}/{app}")
     public ResponseEntity<?> getNetworkAverage(@PathVariable String start, @PathVariable int slots, @PathVariable String app) {
+        InitializationMessageController.logConnection("/network-average", HTTP_METHODS.GET,
+                (List<String>) List.of(start, String.valueOf(slots), app));
         return getAverageStatistics(start, slots, app, true);
     }
 
     @GetMapping("/battery/{start}/{slots}/{uuid}/{app}")
     public ResponseEntity<?> getBattery(@PathVariable String start, @PathVariable int slots, @PathVariable String uuid, @PathVariable String app) {
+        InitializationMessageController.logConnection("/battery", HTTP_METHODS.GET,
+                (List<String>) List.of(start, String.valueOf(slots), uuid, app));
         return getStatistics(start, slots, uuid, app, false);
     }
 
     @GetMapping("/network/{start}/{slots}/{uuid}/{app}")
     public ResponseEntity<?> getNetwork(@PathVariable String start, @PathVariable int slots, @PathVariable String uuid, @PathVariable String app) {
+        InitializationMessageController.logConnection("/network", HTTP_METHODS.GET,
+                (List<String>) List.of(start, String.valueOf(slots), uuid, app));
         return getStatistics(start, slots, uuid, app, true);
     }
 
     // Helper methods
     // forNetwork: Determines whether the function will query network or battery statistics
     private ResponseEntity<?> getAverageStatistics(String start, int slots, String app, boolean forNetwork) {
-        InitializationMessageController.logConnection("/network-average", HTTP_METHODS.GET,
-                (List<String>) List.of(start, String.valueOf(slots), app));
-
         // Replace hyphens with dots in the app string
         app = app.replaceAll("-", ".");
 
@@ -124,9 +129,6 @@ public class QueryController {
     }
 
     private ResponseEntity<?> getStatistics(String start, int slots, String uuid, String app, boolean forNetwork) {
-        InitializationMessageController.logConnection("/battery", HTTP_METHODS.GET,
-                (List<String>) List.of(start, String.valueOf(slots), uuid, app));
-
         // Replace hyphens with dots in the app string
         app = app.replaceAll("-", ".");
 
