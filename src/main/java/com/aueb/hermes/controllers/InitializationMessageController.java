@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.time.format.DateTimeFormatter;
@@ -40,10 +41,12 @@ public class InitializationMessageController {
     @PostMapping(path = "/register-device", consumes = "application/json")
     public ResponseEntity<String> registerDevice(@RequestBody RegisterDeviceRequestBody data) {
         logConnection("/register-device", HTTP_METHODS.POST, null);
-
         // Create a new device
-        Device device = new Device(data.getUuid(), data.getAntennaBatteryConsumption());
-        deviceRepo.save(device);
+        Device device = deviceRepo.findByUuid(data.getUuid());
+        if(device == null){
+            device= new Device(data.getUuid(), data.getAntennaBatteryConsumption());
+            deviceRepo.save(device);
+        }
 
         // Send a confirmation response
         return new ResponseEntity<>(HttpStatus.CREATED);

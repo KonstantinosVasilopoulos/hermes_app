@@ -2,6 +2,7 @@ package com.aueb.hermes.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -37,7 +38,7 @@ public class PersonalStatisticsFragment extends Fragment {
 
         SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Prefs", Context.MODE_PRIVATE);
         PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics("network/21-01-2022-05/2/e5236952-79fd-41a3-9229-fe3950d5c265/com-samsung-android-scloud", "android.intent.action.PERSONAL_NETWORK_FINISHED");
+        personalStatisticsPresenter.getStatistics("network/23-01-2022-03/1/1ae50294-501e-4cd2-9eed-608135ce5e0e/com-samsung-android-SettingsReceiver", "android.intent.action.PERSONAL_NETWORK_FINISHED");
     }
 
     @Override
@@ -76,7 +77,19 @@ public class PersonalStatisticsFragment extends Fragment {
 
         // Add a new graph
         GraphView graph = getView().findViewById(R.id.personal_network_graph);
-        graph.addSeries(mPersonalNetworkSeries);
+        //graph.addSeries(mPersonalNetworkSeries);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 1),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
+        });
+        series.setTitle("Random Curve 1");
+        series.setColor(Color.GREEN);
+        series.setDrawDataPoints(true);
+        series.setDataPointsRadius(10);
+        series.setThickness(8);
     }
 
     // Getters & setters
