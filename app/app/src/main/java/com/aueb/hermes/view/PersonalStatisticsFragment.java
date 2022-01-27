@@ -1,29 +1,32 @@
 package com.aueb.hermes.view;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.app.AlertDialog;
+import android.app.Application;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.Spinner;
+import android.widget.TimePicker;
 import com.aueb.hermes.R;
-import com.aueb.hermes.presenter.PersonalStatisticsPresenter;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public class PersonalStatisticsFragment extends Fragment {
 
-    private volatile LineGraphSeries<DataPoint> mPersonalNetworkSeries;
-    private FrameLayout mRoot;
-    private boolean mDisplayingGraphs;
+    private DatePicker mDatePicker;
+    private TimePicker mTimePicker;
+    ArrayAdapter<String> mAdapter;
 
     public PersonalStatisticsFragment() {
         // Required empty public constructor
@@ -32,11 +35,58 @@ public class PersonalStatisticsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
-        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("Prefs", Context.MODE_PRIVATE);
-        PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics("network/23-01-2022-00/4/b0bae7e7-fbfb-4a80-a475-da55b4955913/com-google-android-youtube");
-//    2022-01-23 00:00:00 |         6174466759976182808 |         14823 | b0bae7e7-fbfb-4a80-a475-da55b4955913 | com.google.android.youtube
+    @Override
+    public void onStart(){
+
+        super.onStart();
+
+        //Pass application names to dropdown
+        PackageManager packageManager = getActivity().getPackageManager();
+        List<ApplicationInfo> apps = packageManager.getInstalledApplications(0);
+        String[] names = new String[apps.size()];
+        int i = 0;
+        for (ApplicationInfo app :apps){
+            names[i++] = app.processName;
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, names);
+        Spinner applicationDropdown = getView().findViewById(R.id.application_dropdown);
+        applicationDropdown.setAdapter(adapter);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
+
+        getView().findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
+
+            int year;
+            int month;
+            int day;
+            int hour;
+
+            @Override
+            public void onClick(View view) {
+
+                //Retrieve the chosen application
+                String app = applicationDropdown.getSelectedItem().toString();
+
+
+                DatePicker datePicker = (DatePicker) getView().findViewById(R.id.date_picker);
+                TimePicker timePicker = (TimePicker) getView().findViewById(R.id.time_picker);
+
+                year = datePicker.getYear();
+                month = datePicker.getMonth() + 1;
+                day = datePicker.getDayOfMonth();
+                hour = timePicker.getHour();
+
+                Intent intent = new Intent(getActivity(), PersonalGraphActivity.class);
+                intent.putExtra("app", app);
+                intent.putExtra("year", year);
+                intent.putExtra("month", month);
+                intent.putExtra("day", day);
+                intent.putExtra("hour", hour);
+                startActivity(intent);
+
+            }});
     }
 
     @Override
@@ -46,55 +96,5 @@ public class PersonalStatisticsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_personal_statistics, container, false);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-        mRoot = getView().findViewById(R.id.personal_fragment_root);
-
-        if (!mDisplayingGraphs) {
-            while (mPersonalNetworkSeries == null) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            displayNetworkGraph();
-        }
-    }
-
-    // Replace the network loading spinner with the network graph
-    public void displayNetworkGraph() {
-        //  Remove the loading spinner
-        ProgressBar loadingSpinner = getView().findViewById(R.id.personalNetworkProgressBar);
-        mRoot.removeView(loadingSpinner);
-
-        // Add a new graph
-        GraphView graph = new GraphView(this.getActivity());
-        graph.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        graph.getViewport().setScalable(true);
-        graph.getViewport().setScalableY(true);
-        graph.getViewport().setScrollableY(true);
-        graph.getViewport().setXAxisBoundsManual(true);
-        graph.getViewport().setMinX(0);
-        graph.getViewport().setMaxX(mPersonalNetworkSeries.getHighestValueX());
-        mPersonalNetworkSeries.setTitle("Random Curve 1");
-        mPersonalNetworkSeries.setColor(Color.BLUE);
-        mPersonalNetworkSeries.setDrawDataPoints(true);
-        mPersonalNetworkSeries.setDataPointsRadius(10);
-        mPersonalNetworkSeries.setThickness(8);
-        graph.addSeries(mPersonalNetworkSeries);
-        mRoot.addView(graph);
-
-        mDisplayingGraphs = true;
-    }
-
-    // Getters & setters
-    public void setPersonalNetworkSeries(LineGraphSeries<DataPoint> mPersonalNetworkSeries){
-        this.mPersonalNetworkSeries = mPersonalNetworkSeries;
-    }
 }

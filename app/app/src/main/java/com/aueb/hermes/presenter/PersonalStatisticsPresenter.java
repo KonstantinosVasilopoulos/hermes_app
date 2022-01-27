@@ -1,9 +1,11 @@
 package com.aueb.hermes.presenter;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 
 import androidx.fragment.app.Fragment;
 
+import com.aueb.hermes.view.PersonalGraphActivity;
 import com.aueb.hermes.view.PersonalStatisticsFragment;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -27,15 +29,15 @@ import java.util.Map;
 
 public class PersonalStatisticsPresenter {
 
-    private final Fragment parent;
+    private final Activity parent;
     private final String BACKEND_IP_ADDRESS;
     private final int TIME_SLOT_SIZE;
     private final String BACKEND_GET_DATA_URL;
     private final String UUID;
     private final DateTimeFormatter formatter;
 
-    public PersonalStatisticsPresenter(Fragment parent, SharedPreferences sharedPreferences){
-        this.parent =parent;
+    public PersonalStatisticsPresenter(Activity parent, SharedPreferences sharedPreferences){
+        this.parent = parent;
         this.BACKEND_IP_ADDRESS = sharedPreferences.getString("BACKEND_IP_ADDRESS", "192.168.68.110:8080");
         this.TIME_SLOT_SIZE = sharedPreferences.getInt("TIME_SLOT_SIZE", 4);
         this.BACKEND_GET_DATA_URL = "http://" + BACKEND_IP_ADDRESS + "/";
@@ -103,7 +105,7 @@ public class PersonalStatisticsPresenter {
                     for (Date date : dates) {
                         series.appendData(new DataPoint(i++, points.get(date)), true, dates.length, false);
                     }
-                    ((PersonalStatisticsFragment) parent).setPersonalNetworkSeries(series);
+                    ((PersonalGraphActivity) parent).setPersonalNetworkSeries(series);
                 }
 
             } catch (IOException | JSONException e) {

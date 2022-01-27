@@ -6,15 +6,48 @@
     android:id="@+id/personal_fragment_root"
     tools:context=".view.PersonalStatisticsFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-    <ProgressBar
-        android:id="@+id/personalNetworkProgressBar"
-        style="?android:attr/progressBarStyle"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="120dp" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/personal_network_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/application_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/btn_dropdown"
+                android:spinnerMode="dropdown"/>
+
+            <DatePicker
+                android:id="@+id/date_picker"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"
+                android:calendarViewShown="true"
+                android:spinnersShown="false" />
+
+            <TimePicker
+                android:id="@+id/time_picker"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4" />
+
+            <Button
+                android:id="@+id/date_time_set"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="Set" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
 
 </FrameLayout>
