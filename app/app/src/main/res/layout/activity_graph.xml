@@ -5,7 +5,7 @@
     android:id="@+id/personal_network_graph_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.PersonalGraphActivity">
+    tools:context=".view.GraphActivity">
 
     <ProgressBar
         android:id="@+id/personalNetworkProgressBar"

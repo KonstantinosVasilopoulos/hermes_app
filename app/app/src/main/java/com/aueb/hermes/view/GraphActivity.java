@@ -7,15 +7,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.aueb.hermes.R;
-import com.aueb.hermes.presenter.PersonalStatisticsPresenter;
+import com.aueb.hermes.presenter.StatisticsPresenter;
+import com.google.android.material.snackbar.Snackbar;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
@@ -26,14 +24,16 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class PersonalGraphActivity extends AppCompatActivity {
+public class GraphActivity extends AppCompatActivity {
 
     private volatile LineGraphSeries<DataPoint> mPersonalNetworkSeries;
     private ConstraintLayout mRoot;
     private boolean mDisplayingGraphs;
+    private boolean mError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         //Assemble URL
         String app = getIntent().getStringExtra("app");
@@ -58,14 +58,19 @@ public class PersonalGraphActivity extends AppCompatActivity {
         Duration duration = Duration.between(start, now);
         int slots = (int) (duration.toHours() / 4);
 
-        String url = "network/" + addInitZero(day) + "-"  + addInitZero(month) + "-"  + year + "-"  + addInitZero(hour) + "/" + slots + "/" + uuid + "/" + app;
+        String url;
+
+        if (getIntent().getBooleanExtra("type", true)) {
+            url = "network/" + addInitZero(day) + "-"  + addInitZero(month) + "-"  + year + "-"  + addInitZero(hour) + "/" + slots + "/" + uuid + "/" + app;
+        }else {
+            url = "network-average/" + addInitZero(day) + "-"  + addInitZero(month) + "-"  + year + "-"  + addInitZero(hour) + "/" + slots + "/" + app;
+        }
+
+        StatisticsPresenter statisticsPresenter = new StatisticsPresenter(this, sharedPreferences);
+        statisticsPresenter.getStatistics(url);
 
 
-        PersonalStatisticsPresenter personalStatisticsPresenter = new PersonalStatisticsPresenter(this, sharedPreferences);
-        personalStatisticsPresenter.getStatistics(url);
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_personal_graph);
+        setContentView(R.layout.activity_graph);
         mRoot = findViewById(R.id.personal_network_graph_layout);
 
         if (!mDisplayingGraphs) {
@@ -76,17 +81,23 @@ public class PersonalGraphActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            //  Remove the loading spinner
+            ProgressBar loadingSpinner = findViewById(R.id.personalNetworkProgressBar);
+            mRoot.removeView(loadingSpinner);
+            if (mError){
+                //Snackbar.make(mRoot, "No data for the requested application.", Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(this, "No data for the requested application.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            else {
+                displayNetworkGraph(start);
+            }
 
-            displayNetworkGraph(start);
         }
     }
 
     // Replace the network loading spinner with the network graph
     public void displayNetworkGraph(LocalDateTime start) {
-        //  Remove the loading spinner
-        ProgressBar loadingSpinner = findViewById(R.id.personalNetworkProgressBar);
-        mRoot.removeView(loadingSpinner);
-
         // Add a new graph
         GraphView graph = new GraphView(this);
         graph.setLayoutParams(new ViewGroup.LayoutParams(
@@ -126,6 +137,10 @@ public class PersonalGraphActivity extends AppCompatActivity {
     // Getters & setters
     public void setPersonalNetworkSeries(LineGraphSeries<DataPoint> mPersonalNetworkSeries){
         this.mPersonalNetworkSeries = mPersonalNetworkSeries;
+    }
+
+    public void setError(){
+        mError = true;
     }
 
     private String addInitZero(int value){

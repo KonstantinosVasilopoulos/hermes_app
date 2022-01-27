@@ -1,40 +1,36 @@
 package com.aueb.hermes.view;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import com.aueb.hermes.R;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+
 import java.util.List;
 
-public class PersonalStatisticsFragment extends Fragment {
+public class StatisticsFragment extends Fragment {
 
-    private DatePicker mDatePicker;
-    private TimePicker mTimePicker;
-    ArrayAdapter<String> mAdapter;
+    private boolean mType;
 
-    public PersonalStatisticsFragment() {
+    public StatisticsFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        mType = args.getBoolean("FRAGMENT_TYPE", true);
     }
 
     @Override
@@ -78,12 +74,13 @@ public class PersonalStatisticsFragment extends Fragment {
                 day = datePicker.getDayOfMonth();
                 hour = timePicker.getHour();
 
-                Intent intent = new Intent(getActivity(), PersonalGraphActivity.class);
+                Intent intent = new Intent(getActivity(), GraphActivity.class);
                 intent.putExtra("app", app);
                 intent.putExtra("year", year);
                 intent.putExtra("month", month);
                 intent.putExtra("day", day);
                 intent.putExtra("hour", hour);
+                intent.putExtra("type", mType);
                 startActivity(intent);
 
             }});
@@ -93,8 +90,6 @@ public class PersonalStatisticsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_personal_statistics, container, false);
+        return inflater.inflate(R.layout.fragment_statistics, container, false);
     }
-
-
 }

@@ -2,6 +2,7 @@ package com.aueb.hermes.utils;
 
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -9,8 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.aueb.hermes.R;
-import com.aueb.hermes.view.CombinedStatisticsFragment;
-import com.aueb.hermes.view.PersonalStatisticsFragment;
+import com.aueb.hermes.view.StatisticsFragment;
 
 public class ViewPageAdapter extends FragmentPagerAdapter {
 
@@ -24,14 +24,17 @@ public class ViewPageAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment;
+        Fragment fragment = new StatisticsFragment();;
+        Bundle args = new Bundle();
+        //FRAGMENT_TYPE : true = personal, false = average
         if (position == 0){
-            fragment = new PersonalStatisticsFragment();
+            args.putBoolean("FRAGMENT_TYPE", true);
         }
         else {
-            fragment = new CombinedStatisticsFragment();
+            args.putBoolean("FRAGMENT_TYPE", false);
         }
 
+        fragment.setArguments(args);
         return fragment;
     }
 
