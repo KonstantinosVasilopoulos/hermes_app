@@ -103,7 +103,7 @@ public class QueryController {
             // Filter out time slots that are outside the range of the starting time + slots
             if ((slot.getFromTime().isAfter(current) || slot.getFromTime().isEqual(current))
                     && slot.getFromTime().isBefore(current.plusHours(slots * TIME_SLOT_SIZE))) {
-                result.put(slot.getFromTime(), forNetwork ? slot.getNetworkUsage() : slot.getNetworkBatteryConsumption());
+                result.put(slot.getFromTime(), forNetwork ? result.get(slot.getFromTime()) + slot.getNetworkUsage() : result.get(slot.getFromTime()) + slot.getNetworkBatteryConsumption());
                 devices.put(slot.getFromTime(), devices.get(slot.getFromTime()) + 1);
             }
         }

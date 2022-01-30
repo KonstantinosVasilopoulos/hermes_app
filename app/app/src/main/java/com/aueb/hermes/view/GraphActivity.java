@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.aueb.hermes.R;
 import com.aueb.hermes.presenter.StatisticsPresenter;
+import com.aueb.hermes.utils.TimeSlotUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
@@ -43,7 +44,7 @@ public class GraphActivity extends AppCompatActivity {
         int hour = getIntent().getIntExtra("hour", 1);
 
         LocalDateTime start = LocalDateTime.of(year,month, day,hour, 0);
-        start = getTimeSlotHour(start);
+        start = TimeSlotUtils.getTimeSlotHour(start);
         year = start.getYear();
         month = start.getMonthValue();
         day = start.getDayOfMonth();
@@ -148,12 +149,5 @@ public class GraphActivity extends AppCompatActivity {
             return "0" + value;
         }
         return String.valueOf(value);
-    }
-
-    private LocalDateTime getTimeSlotHour(LocalDateTime query){
-        if((query.getHour() % 4) != 0){
-            return query.plusHours(4 - (query.getHour() % 4));
-        }
-        return query;
     }
 }

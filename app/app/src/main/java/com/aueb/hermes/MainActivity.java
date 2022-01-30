@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.aueb.hermes.presenter.MainPresenter;
 import com.aueb.hermes.utils.InitFinishedReceiver;
+import com.aueb.hermes.utils.TimeSlotUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("registered", true);
 
             //initialize constant values
-            editor.putString("BACKEND_IP_ADDRESS", "10.0.2.2:8080");
+            editor.putString("BACKEND_IP_ADDRESS", "192.168.68.111:8080");
             editor.putInt("TIME_SLOT_SIZE", 4);
             lastStr = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0).minusHours(4).format(formatter);
             editor.putString("last", lastStr);
@@ -69,18 +70,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Collect and send the device's data to the server
         lastStr = sharedPreferences.getString("last", null);
-        //lastStr = LocalDateTime.now().withHour(2).withMinute(0).withSecond(0).withNano(0).format(formatter);
         LocalDateTime last;
-        if (lastStr == null) {
-            last = LocalDateTime.now();
-        } else {
-            last = LocalDateTime.parse(lastStr, formatter);
-        }
+        last = LocalDateTime.parse(lastStr, formatter);
+
         presenter.collectAndSendRawData(last);
 
         // Update the variable storing the date and time the server was informed
         // IMPORTANT NOTE: last holds the last beginning and not the last hour documented!
-        last = LocalDateTime.now().withHour(20).withMinute(0).withSecond(0).withNano(0).minusDays(1);
+        last = TimeSlotUtils.getTimeSlotHour(LocalDateTime.now().withMinute(0).withSecond(0).withNano(0)).minusHours(8);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("last", last.format(formatter));
         editor.apply();
