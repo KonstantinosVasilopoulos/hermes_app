@@ -17,33 +17,63 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/main"
+                android:padding="5sp"
+                android:text="@string/select_application"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+
             <Spinner
                 android:id="@+id/application_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5sp"
+                android:layout_marginBottom="20sp"
                 android:background="@android:drawable/btn_dropdown"
-                android:spinnerMode="dropdown"/>
+                android:spinnerMode="dropdown" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/main"
+                android:padding="5sp"
+                android:text="@string/select_date_amp_time"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
 
             <DatePicker
                 android:id="@+id/date_picker"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="20sp"
                 android:layout_weight="4"
+                android:calendarTextColor="#2196F3"
                 android:calendarViewShown="true"
-                android:spinnersShown="false" />
+                android:spinnersShown="false"
+                android:theme="@style/DialogTheme"
+                android:yearListSelectorColor="#03A9F4" />
 
             <TimePicker
                 android:id="@+id/time_picker"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="4" />
+                android:layout_marginBottom="20sp"
+                android:layout_weight="4"
+                android:theme="@style/DialogTheme" />
 
             <Button
                 android:id="@+id/date_time_set"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginLeft="8sp"
+                android:layout_marginRight="8sp"
                 android:layout_weight="1"
-                android:text="Set" />
+                android:backgroundTint="@color/highlights"
+                android:text="@string/search"
+                android:textColor="@color/main" />
 
 
         </LinearLayout>

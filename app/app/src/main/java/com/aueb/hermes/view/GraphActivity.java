@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -82,9 +83,6 @@ public class GraphActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            //  Remove the loading spinner
-            ProgressBar loadingSpinner = findViewById(R.id.personalNetworkProgressBar);
-            mRoot.removeView(loadingSpinner);
             if (mError){
                 //Snackbar.make(mRoot, "No data for the requested application.", Snackbar.LENGTH_SHORT).show();
                 Toast.makeText(this, "No data for the requested application.", Toast.LENGTH_SHORT).show();

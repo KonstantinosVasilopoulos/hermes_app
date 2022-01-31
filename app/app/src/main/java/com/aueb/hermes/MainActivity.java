@@ -4,11 +4,16 @@ import android.app.AppOpsManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.aueb.hermes.presenter.MainPresenter;
 import com.aueb.hermes.utils.InitFinishedReceiver;
@@ -34,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(intent);
         }
+
+        //Change spinner's color
+        ProgressBar spinner = findViewById(R.id.main_loading_spinner);
+        spinner.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.main), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
